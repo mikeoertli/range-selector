@@ -5,6 +5,9 @@ is for selecting a frequency range in a simple and intuitive way.
 Initially, this will focus on providing a Swing based GUI for selecting a range of values, but the goal is to 
 offer both Swing and JavaFX-based solutions eventually.
 
+This is the ultra-simple proof-of-concept view:
+![Simple Range Selection](doc/simple-range-selection-panel.gif)
+
 ## Requirements
 This project requires:
 * JDK 11 ([AdoptOpenJDK](https://adoptopenjdk.net) is an excellent, free, OpenJDK option.)

@@ -5,7 +5,7 @@ package com.mikeoertli.rangeselector.api;
  *
  * @since 0.0.1
  */
-public interface IRangeSelectorPanel
+public interface IRangeSelectorView
 {
 
     /**

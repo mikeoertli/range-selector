@@ -2,6 +2,7 @@ package com.mikeoertli.rangeselector.data.rangetype;
 
 import com.mikeoertli.rangeselector.api.IRangeType;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,7 +14,7 @@ import java.util.Optional;
  *
  * @since 0.0.1
  */
-public enum FrequencyUnits implements IRangeType<Long>
+public enum FrequencyUnits implements IRangeType<Long, Double>
 {
     HZ("Hz", 1L),
     KHZ("KHz", 1000L),
@@ -75,24 +76,31 @@ public enum FrequencyUnits implements IRangeType<Long>
     @Override
     public Optional<Long> getAbsoluteMaximum()
     {
-        return Optional.empty();
+        return Optional.of(Long.MAX_VALUE);
     }
 
-    /**
-     * Given a frequency, determine what units of measure are the most logical, Hz, KHz, MHz,
-     * or GHz. Return the string of the frequency divided down then append the units.
-     *
-     * @param frequencyHz the frequency (in Hz) to convert to a string
-     * @return the string representing a logical representation of the given speed
-     */
-    public static String getFrequencyStringFromNumber(long frequencyHz)
+    @Override
+    public Long convertDisplayValueToRawValue(Double displayValue, String units)
     {
-        Double doubleFreqHz = getFrequencyNumberScaledToGuiFriendlyRange(frequencyHz);
+        final FrequencyUnits givenUnits = fromString(units);
+        return Double.valueOf(convertFrequency(displayValue, givenUnits, HZ)).longValue();
+    }
+
+    @Override
+    public Double convertRawValueToAutoScaledDisplayValue(Long rawValue)
+    {
+        return getFrequencyNumberScaledToGuiFriendlyRange(rawValue);
+    }
+
+    @Override
+    public String getValueAsString(Long rawValue, boolean includeUnits)
+    {
+        Double doubleFreqHz = getFrequencyNumberScaledToGuiFriendlyRange(rawValue);
 
         // Note: we use %s for frequency here because it handles decimal points more gracefully than something like %.3f etc.
-        final FrequencyUnits frequencyUnits = getBestFrequencyUnitsForFrequency(frequencyHz);
+        final FrequencyUnits frequencyUnits = getBestFrequencyUnitsForFrequency(rawValue);
         String frequencyUnitsDisplayName;
-        if (UNKNOWN == frequencyUnits)
+        if (UNKNOWN == frequencyUnits || !includeUnits)
         {
             frequencyUnitsDisplayName = "";
         } else
@@ -152,7 +160,7 @@ public enum FrequencyUnits implements IRangeType<Long>
     /**
      * Get the number part of the "smart" GUI friendly representation of a frequency. This is assumed to be
      * coupled with {@link #getBestFrequencyUnitsForFrequency(long)} and is responsible for populating the
-     * digits of {@link #getFrequencyStringFromNumber(long)}.
+     * digits of {@link #getValueAsString(Long, boolean)}.
      *
      * @param frequencyHz the frequency in Hz to convert to a GUI-friendly number
      * @return the GUI-friendly version of the given frequency, units are assumed and can be obtained via passing
@@ -160,7 +168,7 @@ public enum FrequencyUnits implements IRangeType<Long>
      */
     public static Double getFrequencyNumberScaledToGuiFriendlyRange(long frequencyHz)
     {
-        double frequencyHzDouble = new Long(frequencyHz).doubleValue();
+        double frequencyHzDouble = Long.valueOf(frequencyHz).doubleValue();
         FrequencyUnits desiredUnits = getBestFrequencyUnitsForFrequency(frequencyHz);
         double convertedFrequency = convertFrequency(frequencyHzDouble, HZ, desiredUnits);
         return Math.max(0, convertedFrequency);
@@ -180,5 +188,29 @@ public enum FrequencyUnits implements IRangeType<Long>
     {
         FrequencyUnits unitsEnum = fromString(units);
         return new Double(frequency * unitsEnum.getMultiplierToGetHz()).longValue();
+    }
+
+    /**
+     * Converts the given raw frequency (Hz) to the desired units as a string for display (includes units).
+     * For example, {@code 1_200_000_000L} and {@link #MHZ} will return {@code "1200.0 MHz"} and
+     * {@code 1_225_678_000L} and {@link #GHZ} will return {@code "1.23 GHz"}
+     *
+     * @param frequencyHz  the raw frequency value in Hz
+     * @param desiredUnits the desired frequency units, will be printed in the string
+     * @return the string containing the given frequency into the desired units and ready for display
+     */
+    public static String getFrequencyString(long frequencyHz, FrequencyUnits desiredUnits)
+    {
+        final double scaledFrequency = convertFrequency(Long.valueOf(frequencyHz).doubleValue(), HZ, desiredUnits);
+
+        DecimalFormat decimalFormat;
+        if (scaledFrequency % 1.0 == 0.0)
+        {
+            decimalFormat = new DecimalFormat("#.0");
+        } else
+        {
+            decimalFormat = new DecimalFormat("#.00");
+        }
+        return String.format("%s %s", decimalFormat.format(scaledFrequency), desiredUnits.getDisplayName());
     }
 }
