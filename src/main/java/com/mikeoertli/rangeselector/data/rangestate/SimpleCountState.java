@@ -8,7 +8,7 @@ import org.apache.commons.lang3.Range;
  *
  * @since 0.0.1
  */
-public class SimpleCountState extends ARangeState<SimpleCount>
+public class SimpleCountState extends ARangeState
 {
     public SimpleCountState(SimpleCount rangeType, Range<Double> allowedRange, String fullDescription, String shortLabel)
     {

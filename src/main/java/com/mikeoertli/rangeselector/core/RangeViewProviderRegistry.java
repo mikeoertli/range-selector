@@ -1,7 +1,7 @@
 package com.mikeoertli.rangeselector.core;
 
-import com.mikeoertli.rangeselector.api.IRangeController;
-import com.mikeoertli.rangeselector.api.IRangeControllerRegistry;
+import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
+import com.mikeoertli.rangeselector.api.IRangeViewProviderRegistry;
 import com.mikeoertli.rangeselector.api.IRangeType;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import org.slf4j.Logger;
@@ -20,18 +20,17 @@ import java.util.stream.Collectors;
  * @since 0.0.1
  */
 @Component
-public class RangeControllerRegistry implements IRangeControllerRegistry
+public class RangeViewProviderRegistry implements IRangeViewProviderRegistry
 {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<IRangeController<? extends IRangeType<?, ?>>> registeredControllers = new CopyOnWriteArrayList<>();
+    private final List<IRangeViewControllerProvider> registeredControllers = new CopyOnWriteArrayList<>();
 
     @Override
-    public <RANGE extends IRangeType<? extends Number, ? extends Number>> Optional<IRangeController<RANGE>> getRangeSelectionController(
-            Class<? extends RANGE> rangeType, GuiFrameworkType guiFrameworkType)
+    public Optional<IRangeViewControllerProvider> getRangeSelectionController(IRangeType rangeType, GuiFrameworkType guiFrameworkType)
     {
-        final List<IRangeController<RANGE>> availableControllers = findCompatibleControllers(rangeType, guiFrameworkType);
+        final List<IRangeViewControllerProvider> availableControllers = findCompatibleControllers(rangeType, guiFrameworkType);
 
         if (availableControllers.isEmpty())
         {
@@ -57,33 +56,31 @@ public class RangeControllerRegistry implements IRangeControllerRegistry
     }
 
     @Override
-    public <RANGE extends IRangeType<? extends Number, ? extends Number>> List<IRangeController<RANGE>> findCompatibleControllers(
-            Class<? extends RANGE> rangeType, GuiFrameworkType guiFrameworkType)
+    public List<IRangeViewControllerProvider> findCompatibleControllers(IRangeType rangeType, GuiFrameworkType guiFrameworkType)
     {
         //noinspection unchecked
         return registeredControllers.stream()
                 .filter(controller -> controller.isConfigurationSupported(rangeType, guiFrameworkType))
-                .map(controller -> (IRangeController<RANGE>) controller)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public <RANGE extends IRangeType<? extends Number, ? extends Number>> void registerRangeSelectorController(IRangeController<RANGE> controller)
+    public void registerRangeSelectorController(IRangeViewControllerProvider provider)
     {
-        registeredControllers.add(controller);
+        registeredControllers.add(provider);
 
         logger.debug("Registered IRangeSelectionController. Type = {}, range data type = {}. There are now {} registered " +
-                "controllers.", controller.getClass().getSimpleName(), controller.getRangeType().getName(), registeredControllers.size());
+                "controllers.", provider.getClass().getSimpleName(), provider.getDescription(), registeredControllers.size());
     }
 
     @Override
-    public <RANGE extends IRangeType<? extends Number, ? extends Number>> boolean unregisterSelectorController(IRangeController<RANGE> controller)
+    public boolean unregisterSelectorController(IRangeViewControllerProvider provider)
     {
-        final boolean removed = registeredControllers.remove(controller);
+        final boolean removed = registeredControllers.remove(provider);
 
         logger.debug("{} IRangeSelectionController. Type = {}, range data type = {}. There are now {} registered " +
                         "controllers.", (removed ? "Removed" : "Tried (but failed) to remove"),
-                controller.getClass().getSimpleName(), controller.getRangeType().getName(), registeredControllers.size());
+                provider.getClass().getSimpleName(), provider.getDescription(), registeredControllers.size());
 
         return removed;
     }

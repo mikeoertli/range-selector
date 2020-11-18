@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * @since 0.0.1
  */
-public interface IRangeState<RANGE extends IRangeType<? extends Number, ? extends Number>>
+public interface IRangeState
 {
     /**
      * @return the shortened label version of the description that captures info about the type of data in this label
@@ -24,9 +24,9 @@ public interface IRangeState<RANGE extends IRangeType<? extends Number, ? extend
     String getFullDescription();
 
     /**
-     * @return the {@link IRangeType} of teh view/controller associated with this saved ranged state
+     * @return the {@link IRangeType} associated with this saved ranged state
      */
-    RANGE getRangeType();
+    IRangeType getRangeType();
 
     /**
      * @return the selected/active range from the view if any, otherwise {@link Optional#empty()}
@@ -68,4 +68,11 @@ public interface IRangeState<RANGE extends IRangeType<? extends Number, ? extend
      * @return the {@link Instant} that this configuration was last updated
      */
     Instant getLastUpdateTime();
+
+    /**
+     * Update the current state with this incoming updated state.
+     *
+     * @param updateState the updated state to incorporate
+     */
+    void update(IRangeState updateState);
 }

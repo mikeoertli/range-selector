@@ -8,13 +8,13 @@ import org.apache.commons.lang3.Range;
  *
  * @since 0.0.1
  */
-public class FrequencyRangeState extends ARangeState<FrequencyUnits>
+public class FrequencyRangeState extends ARangeState
 {
     public static final String CENTER_FREQUENCY_DESCRIPTION = "Center Frequency (MHz)";
     public static final String CENTER_FREQUENCY_SHORT_LABEL = "Freq (MHz)";
 
-    public FrequencyRangeState(Range<Long> absoluteAllowedRange)
+    public FrequencyRangeState(Range<Double> absoluteAllowedRange)
     {
-        super(FrequencyUnits.MHZ, FrequencyUnits.MHZ.getRangeAsRawDouble(absoluteAllowedRange), CENTER_FREQUENCY_DESCRIPTION, CENTER_FREQUENCY_SHORT_LABEL);
+        super(FrequencyUnits.MHZ, absoluteAllowedRange, CENTER_FREQUENCY_DESCRIPTION, CENTER_FREQUENCY_SHORT_LABEL);
     }
 }

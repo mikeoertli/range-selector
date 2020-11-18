@@ -16,13 +16,12 @@ import java.util.Optional;
  * Captures the state of a range selection panel
  *
  * @since 0.0.1
- * @param <RANGE> the type of range data being captured
  */
-public class ARangeState<RANGE extends IRangeType<? extends Number, ? extends Number>> implements IRangeState<RANGE>
+public class ARangeState implements IRangeState
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    protected final RANGE rangeType;
+    protected final IRangeType rangeType;
     protected final String fullDescription;
     protected final String shortLabel;
     protected Range<Double> selectedRange;
@@ -31,15 +30,15 @@ public class ARangeState<RANGE extends IRangeType<? extends Number, ? extends Nu
 
     protected Instant lastUpdateTime;
 
-    public ARangeState(RANGE rangeType, Range<Double> allowedRange, String fullDescription, String shortLabel)
+    public ARangeState(IRangeType rangeType, Range<Double> allowedRange, String fullDescription, String shortLabel)
     {
         Objects.requireNonNull(allowedRange, "Absolute allowable range (absoluteAllowedRange) cannot be null!");
         Objects.requireNonNull(rangeType, "Range Type (rangeType) cannot be null!");
 
         this.allowedRange = allowedRange;
         this.rangeType = rangeType;
-        this.fullDescription = StringUtils.hasText(fullDescription) ? fullDescription : rangeType.getName();
-        this.shortLabel = StringUtils.hasText(shortLabel) ? shortLabel : rangeType.getName();
+        this.fullDescription = StringUtils.hasText(fullDescription) ? fullDescription : rangeType.getLabel();
+        this.shortLabel = StringUtils.hasText(shortLabel) ? shortLabel : rangeType.getLabel();
 
         onStateUpdated();
 
@@ -59,7 +58,7 @@ public class ARangeState<RANGE extends IRangeType<? extends Number, ? extends Nu
     }
 
     @Override
-    public RANGE getRangeType()
+    public IRangeType getRangeType()
     {
         return rangeType;
     }
@@ -73,8 +72,11 @@ public class ARangeState<RANGE extends IRangeType<? extends Number, ? extends Nu
     @Override
     public void setSelectedRange(Range<Double> selectedRange)
     {
-        this.selectedRange = selectedRange;
-        onStateUpdated();
+        if (!this.selectedRange.equals(selectedRange))
+        {
+            this.selectedRange = selectedRange;
+            onStateUpdated();
+        }
     }
 
     @Override
@@ -92,14 +94,35 @@ public class ARangeState<RANGE extends IRangeType<? extends Number, ? extends Nu
     @Override
     public void setLocked(boolean locked)
     {
-        this.locked = locked;
-        onStateUpdated();
+        if (this.locked != locked)
+        {
+            this.locked = locked;
+            onStateUpdated();
+        }
     }
 
     @Override
     public Instant getLastUpdateTime()
     {
         return lastUpdateTime;
+    }
+
+    @Override
+    public void update(IRangeState updateState)
+    {
+        setLocked(updateState.isLocked());
+        if (updateState.getSelectedRange().isPresent())
+        {
+            setSelectedRange(updateState.getSelectedRange().get());
+        } else
+        {
+            clearSelection();
+        }
+    }
+
+    protected void clearSelection()
+    {
+        setSelectedRange(null);
     }
 
     protected void onStateUpdated()
@@ -113,7 +136,7 @@ public class ARangeState<RANGE extends IRangeType<? extends Number, ? extends Nu
         if (this == o) return true;
         if (!(o instanceof ARangeState)) return false;
 
-        ARangeState<?> that = (ARangeState<?>) o;
+        ARangeState that = (ARangeState) o;
 
         if (locked != that.locked) return false;
         if (!rangeType.equals(that.rangeType)) return false;

@@ -1,37 +1,42 @@
-package com.mikeoertli.rangeselector.ui.swing;
+package com.mikeoertli.rangeselector.ui.swing.simple;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
-import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramSelectionPanel;
+import com.mikeoertli.rangeselector.data.rangetype.SimpleCount;
+import com.mikeoertli.rangeselector.ui.swing.ISwingViewController;
 import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionMouseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.JPanel;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * The controller for a swing based range selection panel
+ * The controller for a swing based range selection panel defined by {@link SimpleRangeSelectionPanel}
  *
  * @since 0.0.1
  */
-public class FrequencyRangeSelectorPanelController implements ISwingViewController
+public class SimpleRangeSelectorPanelController implements ISwingViewController
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final UUID uuid;
-    private RangeConfiguration rangeConfiguration;
-    private HistogramSelectionPanel panel;
+    private final SimpleRangeSelectionPanel panel;
     private final RangeSelectionMouseListener selectionListener;
+    private RangeConfiguration rangeConfiguration;
 
-    public FrequencyRangeSelectorPanelController(RangeConfiguration rangeConfiguration)
+
+    public SimpleRangeSelectorPanelController()
     {
         uuid = UUID.randomUUID();
-        this.rangeConfiguration = rangeConfiguration;
+        rangeConfiguration = new RangeConfiguration();
+        panel = new SimpleRangeSelectionPanel(this);
         selectionListener = new RangeSelectionMouseListener(this);
+        panel.addMouseListener(selectionListener);
+        panel.addMouseMotionListener(selectionListener);
     }
 
     @Override
@@ -43,10 +48,6 @@ public class FrequencyRangeSelectorPanelController implements ISwingViewControll
     @Override
     public IRangeSelectorView getView()
     {
-        if (panel == null)
-        {
-            panel = new HistogramSelectionPanel(this);
-        }
         return panel;
     }
 
@@ -88,5 +89,12 @@ public class FrequencyRangeSelectorPanelController implements ISwingViewControll
     {
         rangeConfiguration.setSelectionMin(selectionMin);
         rangeConfiguration.setSelectionMax(selectionMax);
+        panel.repaint();
+    }
+
+    @Override
+    public JPanel getPanel()
+    {
+        return panel;
     }
 }

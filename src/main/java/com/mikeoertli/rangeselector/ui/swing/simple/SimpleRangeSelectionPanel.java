@@ -1,8 +1,7 @@
 package com.mikeoertli.rangeselector.ui.swing.simple;
 
-import java.awt.*;
-
-import com.mikeoertli.rangeselector.ui.swing.RangeSelectorPanel;
+import com.mikeoertli.rangeselector.api.IRangeSelectorView;
+import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionMouseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,25 +15,24 @@ import java.awt.Rectangle;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Panel for the selectable range inside a {@link RangeSelectorPanel}
+ * Panel for the selectable range based on a rectangle of color.
  *
  * @since 0.0.1
  */
-public class SimpleRangeSelectionPanel extends JPanel
+public class SimpleRangeSelectionPanel extends JPanel implements IRangeSelectorView
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final int WIDTH = 400;
     private static final int HEIGHT = 100;
+    private final SimpleRangeSelectorPanelController controller;
+//    private final RangeSelectionMouseListener selectionListener;
 
-    private final RangeSelectionMouseListener selectionListener;
-
-    public SimpleRangeSelectionPanel()
+    public SimpleRangeSelectionPanel(SimpleRangeSelectorPanelController controller)
     {
+        this.controller = controller;
+
         initComponents();
-        selectionListener = new RangeSelectionMouseListener(this);
-        addMouseListener(selectionListener);
-        addMouseMotionListener(selectionListener);
     }
 
     @Override
@@ -42,24 +40,51 @@ public class SimpleRangeSelectionPanel extends JPanel
     {
         super.paintComponent(graphics);
 
-        if (selectionListener.hasRange())
+        final RangeConfiguration rangeState = controller.getRangeConfiguration();
+
+        if (rangeState.hasSelection())
         {
+            final int startOfSelectedRange = rangeState.getSelectionMin();
+            final int endOfSelectedRange = rangeState.getSelectionMax();
+            final int sizeOfSelectedRange = endOfSelectedRange - startOfSelectedRange;
+
             graphics.setColor(Color.RED);
-            final int startOfSelectedRange = selectionListener.getSelectionMinimumX();
             graphics.fillRect(0, 0, startOfSelectedRange, HEIGHT);
 
             graphics.setColor(Color.CYAN);
-            int sizeOfSelectedRange = selectionListener.getSelectionDelta();
             graphics.fillRect(startOfSelectedRange, 0, sizeOfSelectedRange, HEIGHT);
 
             graphics.setColor(Color.RED);
-            final int endOfSelectedRange = selectionListener.getSelectionMaximumX();
             graphics.fillRect(endOfSelectedRange, 0, WIDTH - endOfSelectedRange, HEIGHT);
         } else
         {
             graphics.setColor(Color.YELLOW);
-            graphics.fillRect(selectionListener.getSelectionMaximumX(), 0, WIDTH, HEIGHT);
+            graphics.fillRect(0, 0, WIDTH, HEIGHT);
         }
+    }
+
+    @Override
+    public void reset()
+    {
+
+    }
+
+    @Override
+    public boolean isLocked()
+    {
+        return isEnabled();
+    }
+
+    @Override
+    public void lockPanel()
+    {
+        setEnabled(false);
+    }
+
+    @Override
+    public void unlockPanel()
+    {
+        setEnabled(true);
     }
 
     private void initComponents()
@@ -73,7 +98,8 @@ public class SimpleRangeSelectionPanel extends JPanel
         {
             // compute preferred size
             Dimension preferredSize = new Dimension();
-            for(int i = 0; i < getComponentCount(); i++) {
+            for (int i = 0; i < getComponentCount(); i++)
+            {
                 Rectangle bounds = getComponent(i).getBounds();
                 preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                 preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);

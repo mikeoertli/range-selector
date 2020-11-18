@@ -1,12 +1,15 @@
 package com.mikeoertli.rangeselector.ui.swing.listener;
 
+import com.mikeoertli.rangeselector.api.IRangeViewController;
+import com.mikeoertli.rangeselector.data.RangeConfiguration;
+import org.apache.commons.lang3.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 /**
  * Listens to the mouse events associated with making a range selection
@@ -28,11 +31,11 @@ public class RangeSelectionMouseListener extends MouseAdapter
 
     private int captureCount = 0;
 
-    private final JPanel panel;
+    private final IRangeViewController controller;
 
-    public RangeSelectionMouseListener(JPanel panel)
+    public RangeSelectionMouseListener(IRangeViewController controller)
     {
-        this.panel = panel;
+        this.controller = controller;
     }
 
     @Override
@@ -71,12 +74,12 @@ public class RangeSelectionMouseListener extends MouseAdapter
     private void selectedRangeChanged(int xLocation)
     {
         lastKnown = xLocation;
-        panel.repaint();
+        saveUpdatedRange();
     }
 
     private void startRangeCapture(int xLocation)
     {
-        logger.trace("Start range capture: {}", captureCount);
+        logger.trace("Start range capture #{}", captureCount);
         reset();
 
         armed = true;
@@ -85,7 +88,7 @@ public class RangeSelectionMouseListener extends MouseAdapter
 
         captureCount++;
 
-        panel.repaint();
+        saveUpdatedRange();
     }
 
     private void endRangeCapture(int xLocation)
@@ -94,9 +97,9 @@ public class RangeSelectionMouseListener extends MouseAdapter
         endRange = xLocation;
         lastKnown = xLocation;
 
-        logger.trace("End of capture range. Start: {}, end: {}.", startRange, endRange);
+        logger.trace("End of capture range (#{}). Start: {}, end: {}.", captureCount, startRange, endRange);
 
-        panel.repaint();
+        saveUpdatedRange();
     }
 
     public void cancel()
@@ -112,6 +115,12 @@ public class RangeSelectionMouseListener extends MouseAdapter
         startRange = -1;
         endRange = -1;
         lastKnown = -1;
+        saveUpdatedRange();
+    }
+
+    private void saveUpdatedRange()
+    {
+        controller.onRangeSelectionChanged(getSelectionMinimumX(), getSelectionMaximumX());
     }
 
     public boolean isArmed()
@@ -148,5 +157,20 @@ public class RangeSelectionMouseListener extends MouseAdapter
     public int getSelectionDelta()
     {
         return getSelectionMaximumX() - getSelectionMinimumX();
+    }
+
+    public Range<Integer> getSelectedRange()
+    {
+        final int selectionMinimumX = getSelectionMinimumX();
+        final int selectionMaximumX = getSelectionMaximumX();
+        return Range.between(selectionMinimumX, selectionMaximumX);
+    }
+
+    public void setSelectedRange(int selectionMin, int selectionMax)
+    {
+        reset();
+        startRange = selectionMin;
+        endRange = selectionMax;
+        lastKnown = selectionMax;
     }
 }

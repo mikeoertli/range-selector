@@ -14,7 +14,7 @@ import java.util.Optional;
  *
  * @since 0.0.1
  */
-public enum FrequencyUnits implements IRangeType<Long, Double>
+public enum FrequencyUnits implements IRangeType
 {
     HZ("Hz", 1L),
     KHZ("KHz", 1000L),
@@ -56,7 +56,7 @@ public enum FrequencyUnits implements IRangeType<Long, Double>
     }
 
     @Override
-    public String getName()
+    public String getLabel()
     {
         return "Frequency";
     }
@@ -68,31 +68,28 @@ public enum FrequencyUnits implements IRangeType<Long, Double>
     }
 
     @Override
-    public Optional<Long> getAbsoluteMinimum()
+    public Optional<Double> getAbsoluteMinimum()
     {
-        return Optional.of(0L);
+        return Optional.of(0.0);
     }
 
     @Override
-    public Optional<Long> getAbsoluteMaximum()
+    public Optional<Double> getAbsoluteMaximum()
     {
-        return Optional.of(Long.MAX_VALUE);
+        return Optional.of(Double.MAX_VALUE);
     }
 
-    @Override
     public Long convertDisplayValueToRawValue(Double displayValue, String units)
     {
         final FrequencyUnits givenUnits = fromString(units);
         return Double.valueOf(convertFrequency(displayValue, givenUnits, HZ)).longValue();
     }
 
-    @Override
     public Double convertRawValueToAutoScaledDisplayValue(Long rawValue)
     {
         return getFrequencyNumberScaledToGuiFriendlyRange(rawValue);
     }
 
-    @Override
     public String getValueAsString(Long rawValue, boolean includeUnits)
     {
         Double doubleFreqHz = getFrequencyNumberScaledToGuiFriendlyRange(rawValue);

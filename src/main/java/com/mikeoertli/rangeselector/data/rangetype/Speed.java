@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector.data.rangetype;
 
-import com.mikeoertli.rangeselector.api.ISimpleRangeType;
+import com.mikeoertli.rangeselector.api.IRangeType;
 
 import java.util.Optional;
 
@@ -9,12 +9,12 @@ import java.util.Optional;
  *
  * @since 0.0.1
  */
-public class Speed implements ISimpleRangeType<Double>
+public class Speed implements IRangeType
 {
     public static final double SPEED_OF_LIGHT_MPS = 299_792_458.0;
 
     @Override
-    public String getName()
+    public String getLabel()
     {
         return "Speed";
     }

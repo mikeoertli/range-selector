@@ -1,7 +1,6 @@
 package com.mikeoertli.rangeselector.data.rangetype;
 
 import com.mikeoertli.rangeselector.api.IRangeType;
-import com.mikeoertli.rangeselector.api.ISimpleRangeType;
 
 import java.util.Optional;
 
@@ -10,33 +9,41 @@ import java.util.Optional;
  *
  * @since 0.0.1
  */
-public class SimpleCount implements ISimpleRangeType<Integer>
+public class SimpleCount implements IRangeType
 {
-    public static final String DEFAULT_COUNT_UNITS = "count";
-    public static final String DEFAULT_COUNT_NAME = "Simple Count";
+    private static final int DEFAULT_RANGE_MINIMUM = 0;
+    private static final int DEFAULT_RANGE_MAXIMUM = 100;
 
     protected final Integer minimum;
     protected final Integer maximum;
-    protected final String name;
-    protected final String units;
+    protected String label;
+    protected String units;
 
-    public SimpleCount(Integer minimum, Integer maximum, String name, String units)
+    public SimpleCount(Integer minimum, Integer maximum)
     {
         this.minimum = minimum;
         this.maximum = maximum;
-        this.name = name;
-        this.units = units;
     }
 
     public SimpleCount()
     {
-        this(Integer.MIN_VALUE, Integer.MAX_VALUE, DEFAULT_COUNT_NAME, DEFAULT_COUNT_UNITS);
+        this(DEFAULT_RANGE_MINIMUM, DEFAULT_RANGE_MAXIMUM);
+    }
+
+    public void setLabel(String label)
+    {
+        this.label = label;
+    }
+
+    public void setUnits(String units)
+    {
+        this.units = units;
     }
 
     @Override
-    public String getName()
+    public String getLabel()
     {
-        return name;
+        return label;
     }
 
     @Override
@@ -46,20 +53,14 @@ public class SimpleCount implements ISimpleRangeType<Integer>
     }
 
     @Override
-    public Optional<Integer> getAbsoluteMinimum()
+    public Optional<Double> getAbsoluteMinimum()
     {
-        return Optional.of(minimum);
+        return Optional.of(minimum.doubleValue());
     }
 
     @Override
-    public Optional<Integer> getAbsoluteMaximum()
+    public Optional<Double> getAbsoluteMaximum()
     {
-        return Optional.of(maximum);
-    }
-
-    @Override
-    public String getValueAsString(Integer rawValue, boolean includeUnits)
-    {
-        return rawValue + (includeUnits ? units : "");
+        return Optional.of(maximum.doubleValue());
     }
 }
