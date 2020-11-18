@@ -1,8 +1,8 @@
 package com.mikeoertli.rangeselector.core;
 
+import com.mikeoertli.rangeselector.api.IRangeType;
 import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.api.IRangeViewProviderRegistry;
-import com.mikeoertli.rangeselector.api.IRangeType;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

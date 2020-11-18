@@ -2,7 +2,6 @@ package com.mikeoertli.rangeselector.ui.swing.simple;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionMouseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -3,7 +3,6 @@ package com.mikeoertli.rangeselector.ui.swing.simple;
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.data.rangetype.SimpleCount;
 import com.mikeoertli.rangeselector.ui.swing.ISwingViewController;
 import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionMouseListener;
 import org.slf4j.Logger;
@@ -27,7 +26,6 @@ public class SimpleRangeSelectorPanelController implements ISwingViewController
     private final SimpleRangeSelectionPanel panel;
     private final RangeSelectionMouseListener selectionListener;
     private RangeConfiguration rangeConfiguration;
-
 
     public SimpleRangeSelectorPanelController()
     {

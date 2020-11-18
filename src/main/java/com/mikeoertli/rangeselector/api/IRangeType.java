@@ -1,7 +1,5 @@
 package com.mikeoertli.rangeselector.api;
 
-import org.apache.commons.lang3.Range;
-
 import java.util.Optional;
 
 /**
@@ -41,5 +39,4 @@ public interface IRangeType
      * @return the absolute maximum associated with this type of range, if any, otherwise {@link Optional#empty()}
      */
     Optional<Double> getAbsoluteMaximum();
-
 }

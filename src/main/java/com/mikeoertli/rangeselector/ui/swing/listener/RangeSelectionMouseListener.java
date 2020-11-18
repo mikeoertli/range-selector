@@ -1,7 +1,6 @@
 package com.mikeoertli.rangeselector.ui.swing.listener;
 
 import com.mikeoertli.rangeselector.api.IRangeViewController;
-import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import org.apache.commons.lang3.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
 
 /**
  * Listens to the mouse events associated with making a range selection

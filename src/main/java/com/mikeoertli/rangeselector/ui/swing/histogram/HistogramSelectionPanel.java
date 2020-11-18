@@ -1,10 +1,11 @@
 package com.mikeoertli.rangeselector.ui.swing.histogram;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
-import com.mikeoertli.rangeselector.ui.swing.FrequencyRangeSelectorPanelController;
 
-import java.awt.*;
-import javax.swing.*;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Rectangle;
 
 /**
  * Range selection panel that uses a histogram as the underlying image/selectable GUI
@@ -15,12 +16,14 @@ public class HistogramSelectionPanel extends JPanel implements IRangeSelectorVie
 {
     private final FrequencyRangeSelectorPanelController controller;
 
-    public HistogramSelectionPanel(FrequencyRangeSelectorPanelController controller) {
+    public HistogramSelectionPanel(FrequencyRangeSelectorPanelController controller)
+    {
         this.controller = controller;
         initComponents();
     }
 
-    private void initComponents() {
+    private void initComponents()
+    {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
 
         //======== this ========
@@ -30,7 +33,8 @@ public class HistogramSelectionPanel extends JPanel implements IRangeSelectorVie
         {
             // compute preferred size
             Dimension preferredSize = new Dimension();
-            for(int i = 0; i < getComponentCount(); i++) {
+            for (int i = 0; i < getComponentCount(); i++)
+            {
                 Rectangle bounds = getComponent(i).getBounds();
                 preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                 preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);

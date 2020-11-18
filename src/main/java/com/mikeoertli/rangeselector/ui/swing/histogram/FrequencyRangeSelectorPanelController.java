@@ -1,10 +1,9 @@
-package com.mikeoertli.rangeselector.ui.swing;
+package com.mikeoertli.rangeselector.ui.swing.histogram;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
-import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramSelectionPanel;
+import com.mikeoertli.rangeselector.ui.swing.ISwingViewController;
 import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionMouseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

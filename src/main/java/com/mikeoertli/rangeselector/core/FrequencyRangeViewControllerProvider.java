@@ -1,12 +1,12 @@
 package com.mikeoertli.rangeselector.core;
 
-import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.api.IRangeType;
 import com.mikeoertli.rangeselector.api.IRangeViewController;
+import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.data.rangetype.FrequencyUnits;
-import com.mikeoertli.rangeselector.ui.swing.FrequencyRangeSelectorPanelController;
+import com.mikeoertli.rangeselector.ui.swing.histogram.FrequencyRangeSelectorPanelController;
 
 import javax.naming.OperationNotSupportedException;
 
