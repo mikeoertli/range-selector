@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector;
 
-import com.mikeoertli.rangeselector.ui.swing.histogram.FrequencyRangeSelectorPanelController;
+import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramRangeSelectorPanelController;
 import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectorPanelController;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
@@ -37,7 +37,7 @@ public class RangeSelectorApplication
 
         JDialog histogramDialog = new JDialog();
         histogramDialog.setSize(400, 200);
-        FrequencyRangeSelectorPanelController histogramController = new FrequencyRangeSelectorPanelController();
+        HistogramRangeSelectorPanelController histogramController = new HistogramRangeSelectorPanelController();
         List<Integer> primaryData = Arrays.asList(10, 5, 15, 2, 14, 3, 0, 9);
         List<Integer> secondaryData = Arrays.asList(1, 8, 0, 0, 20, 12, 4, 13);
         histogramController.setPrimaryDataPoints(primaryData);

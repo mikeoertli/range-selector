@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
  *
  * @since 0.0.1
  */
-public class FrequencyRangeSelectorPanelController extends ASwingRangeViewController
+public class HistogramRangeSelectorPanelController extends ASwingRangeViewController
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final List<Integer> primaryDataPoints = new ArrayList<>();
     private final List<Integer> secondaryDataPoints = new ArrayList<>();
 
-    public FrequencyRangeSelectorPanelController()
+    public HistogramRangeSelectorPanelController()
     {
         super();
     }
@@ -55,6 +55,12 @@ public class FrequencyRangeSelectorPanelController extends ASwingRangeViewContro
     List<Integer> getSecondaryDataPoints()
     {
         return Collections.unmodifiableList(secondaryDataPoints);
+    }
+
+    public void setLegendLabels(String primary, String secondary)
+    {
+        ((HistogramSelectionPanel) panel).setPrimaryLabelText(primary);
+        ((HistogramSelectionPanel) panel).setSecondaryLabelText(secondary);
     }
 
     int getNumBins()

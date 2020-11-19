@@ -6,7 +6,7 @@ import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.data.rangetype.FrequencyUnits;
-import com.mikeoertli.rangeselector.ui.swing.histogram.FrequencyRangeSelectorPanelController;
+import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramRangeSelectorPanelController;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -23,7 +23,7 @@ public class FrequencyRangeViewControllerProvider implements IRangeViewControlle
     {
         if (GuiFrameworkType.SWING == guiFramework)
         {
-            final FrequencyRangeSelectorPanelController controller = new FrequencyRangeSelectorPanelController();
+            final HistogramRangeSelectorPanelController controller = new HistogramRangeSelectorPanelController();
             if (rangeConfiguration != null)
             {
                 controller.restoreState(rangeConfiguration);

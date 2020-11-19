@@ -8,6 +8,9 @@ offer both Swing and JavaFX-based solutions eventually.
 This is the ultra-simple proof-of-concept view:
 ![Simple Range Selection](doc/simple-range-selection-panel.gif)
 
+Here is a basic histogram-based range selection view:
+![Basic Histogram](doc/basic-histogram-with-legend.gif)
+
 ## Requirements
 This project requires:
 * JDK 11 ([AdoptOpenJDK](https://adoptopenjdk.net) is an excellent, free, OpenJDK option.)
