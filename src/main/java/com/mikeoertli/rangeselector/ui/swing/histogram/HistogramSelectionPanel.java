@@ -47,8 +47,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
 
         final List<Integer> scaledPrimaryData = getHistogramController().getScaledPrimaryData();
         final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
-        paintDataBars(scaledPrimaryData, graphics, 0, firstSelectedDataIndex - 1, DEFAULT_UNSELECTED_PRIMARY_COLOR);
-        paintDataBars(scaledSecondaryData, graphics, 0, firstSelectedDataIndex - 1, DEFAULT_UNSELECTED_SECONDARY_COLOR);
+        paintDataBars(scaledPrimaryData, graphics, 0, firstSelectedDataIndex, DEFAULT_UNSELECTED_PRIMARY_COLOR);
+        paintDataBars(scaledSecondaryData, graphics, 0, firstSelectedDataIndex, DEFAULT_UNSELECTED_SECONDARY_COLOR);
     }
 
     @Override
@@ -66,12 +66,12 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
     {
         final int endSelectedDataIndex = getHistogramDataIndexForPixel(endOfSelectedRange, false);
 
-        if (getHistogramController().getNumBins() > endOfSelectedRange)
+        if (getHistogramController().getNumBins() > endSelectedDataIndex)
         {
             final List<Integer> scaledPrimaryData = getHistogramController().getScaledPrimaryData();
             final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
-            final int firstBarToDraw = endSelectedDataIndex + 1;
-            final int lastBarToDraw = scaledPrimaryData.size() - 1;
+            final int firstBarToDraw = endSelectedDataIndex;
+            final int lastBarToDraw = scaledPrimaryData.size();
             paintDataBars(scaledPrimaryData, graphics, firstBarToDraw, lastBarToDraw, DEFAULT_UNSELECTED_PRIMARY_COLOR);
             paintDataBars(scaledSecondaryData, graphics, firstBarToDraw, lastBarToDraw, DEFAULT_UNSELECTED_SECONDARY_COLOR);
         }
@@ -82,7 +82,7 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
     {
         final List<Integer> scaledPrimaryData = getHistogramController().getScaledPrimaryData();
         final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
-        final int lastBarToDraw = scaledPrimaryData.size() - 1;
+        final int lastBarToDraw = scaledPrimaryData.size();
         final int firstBarToDraw = 0;
         paintDataBars(scaledPrimaryData, graphics, firstBarToDraw, lastBarToDraw, DEFAULT_UNSELECTED_PRIMARY_COLOR);
         paintDataBars(scaledSecondaryData, graphics, firstBarToDraw, lastBarToDraw, DEFAULT_UNSELECTED_SECONDARY_COLOR);
@@ -93,13 +93,14 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
         final int barWidth = calculateBarWidth(scaledDataSet.size());
 
         graphics.setColor(color);
+        final int panelHeight = getHeight();
 
         for (int index = firstBarToDraw; index < lastBarToDraw; index++)
         {
             final Integer dataValue = scaledDataSet.get(index);
             final int barHeight = calculateBarHeight(dataValue);
-            final int startLocX = barWidth * index + GAP_BETWEEN_BARS_IN_PIXELS * (index - 1);
-            final int startLocY = getHeight() - barHeight;
+            final int startLocX = barWidth * index + GAP_BETWEEN_BARS_IN_PIXELS * Math.max(0, (index - 1));
+            final int startLocY = panelHeight - barHeight;
 
             graphics.fillRect(startLocX, startLocY, barWidth, barHeight);
         }

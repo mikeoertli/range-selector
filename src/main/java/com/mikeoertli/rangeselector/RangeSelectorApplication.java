@@ -38,8 +38,8 @@ public class RangeSelectorApplication
         JDialog histogramDialog = new JDialog();
         histogramDialog.setSize(400, 200);
         FrequencyRangeSelectorPanelController histogramController = new FrequencyRangeSelectorPanelController();
-        List<Integer> primaryData = Arrays.asList(9, 5, 12, 2, 14, 3, 0, 9);
-        List<Integer> secondaryData = Arrays.asList(1, 8, 0, 0, 22, 12, 4, 13);
+        List<Integer> primaryData = Arrays.asList(10, 5, 15, 2, 14, 3, 0, 9);
+        List<Integer> secondaryData = Arrays.asList(1, 8, 0, 0, 20, 12, 4, 13);
         histogramController.setPrimaryDataPoints(primaryData);
         histogramController.setSecondaryDataPoints(secondaryData);
         histogramDialog.add(histogramController.getPanel());

@@ -70,11 +70,17 @@ public class FrequencyRangeSelectorPanelController extends ASwingRangeViewContro
         secondaryDataPoints.clear();
     }
 
+    /**
+     * @return the primary data set normalized to 100.0 (normalizes against the max of primary AND secondary data)
+     */
     public List<Integer> getScaledPrimaryData()
     {
         return getScaledData(primaryDataPoints);
     }
 
+    /**
+     * @return the secondary data set normalized to 100.0 (normalizes against the max of primary AND secondary data)
+     */
     public List<Integer> getScaledSecondaryData()
     {
         return getScaledData(secondaryDataPoints);
@@ -86,6 +92,7 @@ public class FrequencyRangeSelectorPanelController extends ASwingRangeViewContro
         final int maxSecondaryDataPoint = secondaryDataPoints.stream().mapToInt(i -> i).max().orElse(0);
         final int maxValue = Math.max(maxPrimaryDataPoint, maxSecondaryDataPoint);
 
+        // Normalize to 100.0
         return dataSet.stream()
                 .map(val -> (1.0 * (maxValue - val) / maxValue) * 100.0)
                 .map(Double::intValue)
