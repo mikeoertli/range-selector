@@ -1,7 +1,7 @@
 package com.mikeoertli.rangeselector.ui.swing.listener;
 
+import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
 import com.mikeoertli.rangeselector.api.IRangeViewController;
-import org.apache.commons.lang3.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ import java.lang.invoke.MethodHandles;
  *
  * @since 0.0.1
  */
-public class RangeSelectionMouseListener extends MouseAdapter
+public class RangeSelectionMouseListener extends MouseAdapter implements IRangeSelectionListener
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -39,19 +39,33 @@ public class RangeSelectionMouseListener extends MouseAdapter
     @Override
     public void mousePressed(MouseEvent e)
     {
-        startRangeCapture(e.getX());
+        if (e.getClickCount() != 2)
+        {
+            startRangeCapture(e.getX());
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e)
     {
-        endRangeCapture(e.getX());
+        if (armed)
+        {
+            endRangeCapture(e.getX());
+        }
     }
 
     @Override
     public void mouseClicked(MouseEvent e)
     {
-        reset();
+        if (e.getClickCount() == 2)
+        {
+            logger.trace("Selecting complete range due to single click.");
+            controller.selectAll();
+        } else
+        {
+            logger.trace("Resetting selection due to single click.");
+            reset();
+        }
     }
 
     @Override
@@ -100,11 +114,7 @@ public class RangeSelectionMouseListener extends MouseAdapter
         saveUpdatedRange();
     }
 
-    public void cancel()
-    {
-        endRangeCapture(lastKnown);
-    }
-
+    @Override
     public void reset()
     {
         logger.trace("Resetting armed status and start/stop/lastKnown range. Was armed? {}", armed);
@@ -118,20 +128,23 @@ public class RangeSelectionMouseListener extends MouseAdapter
 
     private void saveUpdatedRange()
     {
-        controller.onRangeSelectionChanged(getSelectionMinimumX(), getSelectionMaximumX());
+        controller.onRangeSelectionChanged(getSelectedRangeMinimum(), getSelectedRangeMaximum());
     }
 
+    @Override
     public boolean isArmed()
     {
         return armed;
     }
 
+    @Override
     public boolean hasRange()
     {
         return startRange >= 0 && lastKnown >= 0;
     }
 
-    public int getSelectionMinimumX()
+    @Override
+    public int getSelectedRangeMinimum()
     {
         // Selection could have taken place R -> L or L -> R, need to account for "end" being > "start"
         // We will always return from this method with the minimum value and consider that the start
@@ -144,7 +157,8 @@ public class RangeSelectionMouseListener extends MouseAdapter
         }
     }
 
-    public int getSelectionMaximumX()
+    @Override
+    public int getSelectedRangeMaximum()
     {
         // Selection could have taken place R -> L or L -> R, need to account for "end" being > "start"
         // We will always return from this method with the maximum value and consider that the end.
@@ -152,18 +166,13 @@ public class RangeSelectionMouseListener extends MouseAdapter
         return Math.max(startRange, (armed ? lastKnown : endRange));
     }
 
-    public int getSelectionDelta()
+    @Override
+    public int getSelectedRangeSize()
     {
-        return getSelectionMaximumX() - getSelectionMinimumX();
+        return getSelectedRangeMaximum() - getSelectedRangeMinimum();
     }
 
-    public Range<Integer> getSelectedRange()
-    {
-        final int selectionMinimumX = getSelectionMinimumX();
-        final int selectionMaximumX = getSelectionMaximumX();
-        return Range.between(selectionMinimumX, selectionMaximumX);
-    }
-
+    @Override
     public void setSelectedRange(int selectionMin, int selectionMax)
     {
         reset();

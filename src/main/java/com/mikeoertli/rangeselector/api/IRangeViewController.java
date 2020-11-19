@@ -62,4 +62,19 @@ public interface IRangeViewController
      * @param selectionMax the maximum of the selected range
      */
     void onRangeSelectionChanged(int selectionMin, int selectionMax);
+
+    /**
+     * Select the full range
+     */
+    void selectAll();
+
+    /**
+     * @return the minimum possible selectable index
+     */
+    int getSelectableRangeMinimum();
+
+    /**
+     * @return the maximum possible selectable index
+     */
+    int getSelectableRangeMaximum();
 }

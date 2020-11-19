@@ -20,8 +20,8 @@ public class RangeConfiguration
     private static final int DEFAULT_RANGE_MINIMUM = 0;
     private static final int DEFAULT_RANGE_MAXIMUM = 100;
 
-    protected final int rangeMin;
-    protected final int rangeMax;
+    protected int rangeMin;
+    protected int rangeMax;
     protected int selectionMin = -1;
     protected int selectionMax = -1;
 
@@ -116,6 +116,18 @@ public class RangeConfiguration
     public int getRangeMax()
     {
         return rangeMax;
+    }
+
+    public void setRangeMin(int rangeMin)
+    {
+        this.rangeMin = rangeMin;
+        onStateUpdated();
+    }
+
+    public void setRangeMax(int rangeMax)
+    {
+        this.rangeMax = rangeMax;
+        onStateUpdated();
     }
 
     public int getSelectionMin()

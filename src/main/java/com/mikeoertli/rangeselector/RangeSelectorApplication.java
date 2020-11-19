@@ -1,5 +1,6 @@
 package com.mikeoertli.rangeselector;
 
+import com.mikeoertli.rangeselector.ui.swing.histogram.FrequencyRangeSelectorPanelController;
 import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectorPanelController;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
@@ -9,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 public class RangeSelectorApplication
@@ -25,11 +28,22 @@ public class RangeSelectorApplication
 
     public RangeSelectorApplication()
     {
-        JDialog dialog = new JDialog();
-        dialog.setSize(400, 100);
-        SimpleRangeSelectorPanelController controller = new SimpleRangeSelectorPanelController();
-        dialog.add(controller.getPanel());
-        dialog.setVisible(true);
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        JDialog simpleDialog = new JDialog();
+        simpleDialog.setSize(400, 100);
+        SimpleRangeSelectorPanelController simpleController = new SimpleRangeSelectorPanelController();
+        simpleDialog.add(simpleController.getPanel());
+        simpleDialog.setVisible(true);
+        simpleDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        JDialog histogramDialog = new JDialog();
+        histogramDialog.setSize(400, 200);
+        FrequencyRangeSelectorPanelController histogramController = new FrequencyRangeSelectorPanelController();
+        List<Integer> primaryData = Arrays.asList(9, 5, 12, 2, 14, 3, 0, 9);
+        List<Integer> secondaryData = Arrays.asList(1, 8, 0, 0, 22, 12, 4, 13);
+        histogramController.setPrimaryDataPoints(primaryData);
+        histogramController.setSecondaryDataPoints(secondaryData);
+        histogramDialog.add(histogramController.getPanel());
+        histogramDialog.setVisible(true);
+        histogramDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 }

@@ -23,7 +23,12 @@ public class FrequencyRangeViewControllerProvider implements IRangeViewControlle
     {
         if (GuiFrameworkType.SWING == guiFramework)
         {
-            return new FrequencyRangeSelectorPanelController(rangeConfiguration);
+            final FrequencyRangeSelectorPanelController controller = new FrequencyRangeSelectorPanelController();
+            if (rangeConfiguration != null)
+            {
+                controller.restoreState(rangeConfiguration);
+            }
+            return controller;
         } else
         {
             throw new OperationNotSupportedException(guiFramework + " is not a supported GUI framework.");

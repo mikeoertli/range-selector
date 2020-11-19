@@ -1,11 +1,9 @@
 package com.mikeoertli.rangeselector.ui.swing.simple;
 
-import com.mikeoertli.rangeselector.api.IRangeSelectorView;
-import com.mikeoertli.rangeselector.data.RangeConfiguration;
+import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -18,72 +16,52 @@ import java.lang.invoke.MethodHandles;
  *
  * @since 0.0.1
  */
-public class SimpleRangeSelectionPanel extends JPanel implements IRangeSelectorView
+public class SimpleRangeSelectionPanel extends ARangeSelectionPanel
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final int WIDTH = 400;
     private static final int HEIGHT = 100;
-    private final SimpleRangeSelectorPanelController controller;
-//    private final RangeSelectionMouseListener selectionListener;
 
     public SimpleRangeSelectionPanel(SimpleRangeSelectorPanelController controller)
     {
-        this.controller = controller;
+        super(controller);
 
         initComponents();
     }
 
     @Override
-    public void paintComponent(Graphics graphics)
+    protected void paintRegionBeforeSelection(Graphics graphics, int startOfSelectedRange)
     {
-        super.paintComponent(graphics);
+        graphics.setColor(Color.RED);
+        graphics.fillRect(0, 0, startOfSelectedRange, getHeight());
+    }
 
-        final RangeConfiguration rangeState = controller.getRangeConfiguration();
+    @Override
+    protected void paintSelectedRegion(Graphics graphics, int startOfSelectedRange, int endOfSelectedRange)
+    {
+        graphics.setColor(Color.CYAN);
+        graphics.fillRect(startOfSelectedRange, 0, (endOfSelectedRange - startOfSelectedRange), getHeight());
+    }
 
-        if (rangeState.hasSelection())
-        {
-            final int startOfSelectedRange = rangeState.getSelectionMin();
-            final int endOfSelectedRange = rangeState.getSelectionMax();
-            final int sizeOfSelectedRange = endOfSelectedRange - startOfSelectedRange;
+    @Override
+    protected void paintRegionAfterSelection(Graphics graphics, int endOfSelectedRange)
+    {
+        graphics.setColor(Color.RED);
+        graphics.fillRect(endOfSelectedRange, 0, getWidth() - endOfSelectedRange, getHeight());
+    }
 
-            graphics.setColor(Color.RED);
-            graphics.fillRect(0, 0, startOfSelectedRange, HEIGHT);
-
-            graphics.setColor(Color.CYAN);
-            graphics.fillRect(startOfSelectedRange, 0, sizeOfSelectedRange, HEIGHT);
-
-            graphics.setColor(Color.RED);
-            graphics.fillRect(endOfSelectedRange, 0, WIDTH - endOfSelectedRange, HEIGHT);
-        } else
-        {
-            graphics.setColor(Color.YELLOW);
-            graphics.fillRect(0, 0, WIDTH, HEIGHT);
-        }
+    @Override
+    protected void paintUnselected(Graphics graphics)
+    {
+        graphics.setColor(Color.YELLOW);
+        graphics.fillRect(0, 0, getWidth(), getHeight());
     }
 
     @Override
     public void reset()
     {
-
-    }
-
-    @Override
-    public boolean isLocked()
-    {
-        return isEnabled();
-    }
-
-    @Override
-    public void lockPanel()
-    {
-        setEnabled(false);
-    }
-
-    @Override
-    public void unlockPanel()
-    {
-        setEnabled(true);
+        logger.trace("Resetting {}", getClass().getSimpleName());
     }
 
     private void initComponents()

@@ -1,91 +1,94 @@
 package com.mikeoertli.rangeselector.ui.swing.histogram;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
-import com.mikeoertli.rangeselector.data.GuiFrameworkType;
-import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.ISwingViewController;
-import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionMouseListener;
+import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The controller for a swing based range selection panel
  *
  * @since 0.0.1
  */
-public class FrequencyRangeSelectorPanelController implements ISwingViewController
+public class FrequencyRangeSelectorPanelController extends ASwingRangeViewController
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final List<Integer> primaryDataPoints = new ArrayList<>();
+    private final List<Integer> secondaryDataPoints = new ArrayList<>();
 
-    private final UUID uuid;
-    private RangeConfiguration rangeConfiguration;
-    private HistogramSelectionPanel panel;
-    private final RangeSelectionMouseListener selectionListener;
-
-    public FrequencyRangeSelectorPanelController(RangeConfiguration rangeConfiguration)
+    public FrequencyRangeSelectorPanelController()
     {
-        uuid = UUID.randomUUID();
-        this.rangeConfiguration = rangeConfiguration;
-        selectionListener = new RangeSelectionMouseListener(this);
+        super();
     }
 
     @Override
-    public GuiFrameworkType getSupportedGuiFramework()
+    protected IRangeSelectorView createPanel()
     {
-        return GuiFrameworkType.SWING;
+        return new HistogramSelectionPanel(this);
     }
 
-    @Override
-    public IRangeSelectorView getView()
+    public void setPrimaryDataPoints(List<Integer> primary)
     {
-        if (panel == null)
-        {
-            panel = new HistogramSelectionPanel(this);
-        }
-        return panel;
+        primaryDataPoints.clear();
+        primaryDataPoints.addAll(primary);
+        refreshPanel();
     }
 
-    @Override
-    public RangeConfiguration getRangeConfiguration()
+    public void setSecondaryDataPoints(List<Integer> secondary)
     {
-        return rangeConfiguration;
+        secondaryDataPoints.clear();
+        secondaryDataPoints.addAll(secondary);
+        refreshPanel();
     }
 
-    @Override
-    public Optional<RangeConfiguration> restoreState(RangeConfiguration updatedConfiguration)
+    List<Integer> getPrimaryDataPoints()
     {
-        final RangeConfiguration cloneConfig = new RangeConfiguration(rangeConfiguration);
-        rangeConfiguration = updatedConfiguration;
-
-        selectionListener.setSelectedRange(rangeConfiguration.getSelectionMin(), rangeConfiguration.getSelectionMax());
-        return Optional.of(cloneConfig);
+        return Collections.unmodifiableList(primaryDataPoints);
     }
 
-    @Override
-    public UUID getUuid()
+    List<Integer> getSecondaryDataPoints()
     {
-        return uuid;
+        return Collections.unmodifiableList(secondaryDataPoints);
+    }
+
+    int getNumBins()
+    {
+        return primaryDataPoints.size();
     }
 
     @Override
     public void shutdown()
     {
-        if (panel != null)
-        {
-            panel.removeMouseListener(selectionListener);
-            panel.removeMouseMotionListener(selectionListener);
-        }
-        // TODO
+        super.shutdown();
+        primaryDataPoints.clear();
+        secondaryDataPoints.clear();
     }
 
-    @Override
-    public void onRangeSelectionChanged(int selectionMin, int selectionMax)
+    public List<Integer> getScaledPrimaryData()
     {
-        rangeConfiguration.setSelectionMin(selectionMin);
-        rangeConfiguration.setSelectionMax(selectionMax);
+        return getScaledData(primaryDataPoints);
+    }
+
+    public List<Integer> getScaledSecondaryData()
+    {
+        return getScaledData(secondaryDataPoints);
+    }
+
+    private List<Integer> getScaledData(List<Integer> dataSet)
+    {
+        final int maxPrimaryDataPoint = primaryDataPoints.stream().mapToInt(i -> i).max().orElse(0);
+        final int maxSecondaryDataPoint = secondaryDataPoints.stream().mapToInt(i -> i).max().orElse(0);
+        final int maxValue = Math.max(maxPrimaryDataPoint, maxSecondaryDataPoint);
+
+        return dataSet.stream()
+                .map(val -> (1.0 * (maxValue - val) / maxValue) * 100.0)
+                .map(Double::intValue)
+                .collect(Collectors.toList());
     }
 }
