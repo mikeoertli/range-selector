@@ -1,5 +1,7 @@
 package com.mikeoertli.rangeselector.ui.swing.simple;
 
+import java.awt.*;
+import javax.swing.*;
 import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +21,6 @@ import java.lang.invoke.MethodHandles;
 public class SimpleRangeSelectionPanel extends ARangeSelectionPanel
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private static final int WIDTH = 400;
-    private static final int HEIGHT = 100;
 
     public SimpleRangeSelectionPanel(SimpleRangeSelectorPanelController controller)
     {
@@ -69,14 +68,15 @@ public class SimpleRangeSelectionPanel extends ARangeSelectionPanel
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
 
         //======== this ========
+        setMinimumSize(new Dimension(100, 20));
+        setPreferredSize(new Dimension(400, 100));
         setName("this");
         setLayout(null);
 
         {
             // compute preferred size
             Dimension preferredSize = new Dimension();
-            for (int i = 0; i < getComponentCount(); i++)
-            {
+            for(int i = 0; i < getComponentCount(); i++) {
                 Rectangle bounds = getComponent(i).getBounds();
                 preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                 preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);

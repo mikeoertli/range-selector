@@ -1,11 +1,13 @@
 package com.mikeoertli.rangeselector.core;
 
 import com.mikeoertli.rangeselector.api.IRangeType;
+import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.api.IRangeViewProviderRegistry;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
@@ -25,12 +27,18 @@ public class RangeViewProviderRegistry implements IRangeViewProviderRegistry
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<IRangeViewControllerProvider> registeredControllers = new CopyOnWriteArrayList<>();
+    private final List<IRangeViewControllerProvider<? extends IRangeViewController>> registeredControllers;
+
+    @Autowired
+    public RangeViewProviderRegistry(List<IRangeViewControllerProvider<? extends IRangeViewController>> registeredControllers)
+    {
+        this.registeredControllers = new CopyOnWriteArrayList<>(registeredControllers);
+    }
 
     @Override
-    public Optional<IRangeViewControllerProvider> getRangeSelectionController(IRangeType rangeType, GuiFrameworkType guiFrameworkType)
+    public Optional<IRangeViewControllerProvider<? extends IRangeViewController>> getRangeViewControlProvider(IRangeType rangeType, GuiFrameworkType guiFrameworkType)
     {
-        final List<IRangeViewControllerProvider> availableControllers = findCompatibleControllers(rangeType, guiFrameworkType);
+        final List<IRangeViewControllerProvider<? extends IRangeViewController>> availableControllers = findCompatibleViewControlProviders(rangeType, guiFrameworkType);
 
         if (availableControllers.isEmpty())
         {
@@ -56,16 +64,15 @@ public class RangeViewProviderRegistry implements IRangeViewProviderRegistry
     }
 
     @Override
-    public List<IRangeViewControllerProvider> findCompatibleControllers(IRangeType rangeType, GuiFrameworkType guiFrameworkType)
+    public List<IRangeViewControllerProvider<? extends IRangeViewController>> findCompatibleViewControlProviders(IRangeType rangeType, GuiFrameworkType guiFrameworkType)
     {
-        //noinspection unchecked
         return registeredControllers.stream()
                 .filter(controller -> controller.isConfigurationSupported(rangeType, guiFrameworkType))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void registerRangeSelectorController(IRangeViewControllerProvider provider)
+    public void registerRangeViewControlProvider(IRangeViewControllerProvider<? extends IRangeViewController> provider)
     {
         registeredControllers.add(provider);
 
@@ -74,7 +81,7 @@ public class RangeViewProviderRegistry implements IRangeViewProviderRegistry
     }
 
     @Override
-    public boolean unregisterSelectorController(IRangeViewControllerProvider provider)
+    public boolean unregisterRangeViewControlProvider(IRangeViewControllerProvider<? extends IRangeViewController> provider)
     {
         final boolean removed = registeredControllers.remove(provider);
 

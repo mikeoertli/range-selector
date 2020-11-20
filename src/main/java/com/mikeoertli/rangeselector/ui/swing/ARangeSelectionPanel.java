@@ -40,6 +40,7 @@ public abstract class ARangeSelectionPanel extends JPanel implements IRangeSelec
             final int startOfSelectedRange = rangeState.getSelectionMin();
             final int endOfSelectedRange = rangeState.getSelectionMax();
 
+
             paintRegionBeforeSelection(graphics, startOfSelectedRange);
 
             paintSelectedRegion(graphics, startOfSelectedRange, endOfSelectedRange);
@@ -116,6 +117,7 @@ public abstract class ARangeSelectionPanel extends JPanel implements IRangeSelec
     @Override
     public void refreshView()
     {
+        revalidate();
         repaint();
     }
 }

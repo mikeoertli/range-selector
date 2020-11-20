@@ -11,6 +11,10 @@ import java.util.Optional;
  */
 public class SimpleCount implements IRangeType
 {
+    public static final SimpleCount BASIC = new SimpleCount(0, 100);
+    public static final SimpleCount LARGE = new SimpleCount(0, 1000);
+    public static final SimpleCount SYMMETRICAL = new SimpleCount(-100, 1000);
+
     private static final int DEFAULT_RANGE_MINIMUM = 0;
     private static final int DEFAULT_RANGE_MAXIMUM = 100;
 
@@ -19,7 +23,7 @@ public class SimpleCount implements IRangeType
     protected String label;
     protected String units;
 
-    public SimpleCount(Integer minimum, Integer maximum)
+    private SimpleCount(Integer minimum, Integer maximum)
     {
         this.minimum = minimum;
         this.maximum = maximum;

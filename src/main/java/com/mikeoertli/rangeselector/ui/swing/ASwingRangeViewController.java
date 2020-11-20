@@ -9,7 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JPanel;
-import java.awt.Dimension;
+import javax.swing.Timer;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.lang.invoke.MethodHandles;
@@ -73,11 +74,14 @@ public abstract class ASwingRangeViewController implements ISwingViewController
     @Override
     public Optional<RangeConfiguration> restoreState(RangeConfiguration updatedConfiguration)
     {
-        final RangeConfiguration cloneConfig = new RangeConfiguration(rangeConfiguration);
+        final RangeConfiguration oldConfig = new RangeConfiguration(rangeConfiguration);
         rangeConfiguration = updatedConfiguration;
 
         selectionListener.setSelectedRange(rangeConfiguration.getSelectionMin(), rangeConfiguration.getSelectionMax());
-        return Optional.of(cloneConfig);
+
+        refreshPanel();
+
+        return Optional.of(oldConfig);
     }
 
     @Override
@@ -104,7 +108,7 @@ public abstract class ASwingRangeViewController implements ISwingViewController
     {
         rangeConfiguration.setSelectionMin(selectionMin);
         rangeConfiguration.setSelectionMax(selectionMax);
-        panel.refreshView();
+        refreshPanel();
     }
 
     @Override
@@ -125,6 +129,13 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         return rangeConfiguration.getRangeMax();
     }
 
+    @Override
+    public void onViewResized()
+    {
+        rangeConfiguration.setRangeMax(getPanel().getWidth());
+        refreshPanel();
+    }
+
     protected void refreshPanel()
     {
         if (panel != null)
@@ -135,12 +146,26 @@ public abstract class ASwingRangeViewController implements ISwingViewController
 
     private class PanelSizeListener extends ComponentAdapter
     {
+        private Timer resizeCompleteTimer;
+        private static final int RESIZE_TIMER_WAIT_MS = 100;
 
         @Override
         public void componentResized(ComponentEvent e)
         {
-            final Dimension size = e.getComponent().getSize();
-            rangeConfiguration.setRangeMax((int) size.getWidth());
+
+            if (resizeCompleteTimer == null)
+            {
+                ActionListener actionListener = e1 -> {
+                    resizeCompleteTimer.stop();
+                    resizeCompleteTimer = null;
+                    onViewResized();
+                };
+                resizeCompleteTimer = new Timer(RESIZE_TIMER_WAIT_MS, actionListener);
+                resizeCompleteTimer.start();
+            } else
+            {
+                resizeCompleteTimer.restart();
+            }
         }
     }
 }

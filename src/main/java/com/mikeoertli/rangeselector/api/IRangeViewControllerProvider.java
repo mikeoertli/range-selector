@@ -3,14 +3,12 @@ package com.mikeoertli.rangeselector.api;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 
-import javax.naming.OperationNotSupportedException;
-
 /**
  * Common interface for all frequency range selector controllers
  *
  * @since 0.0.1
  */
-public interface IRangeViewControllerProvider
+public interface IRangeViewControllerProvider<CONTROL extends IRangeViewController>
 {
     /**
      * Creates a range selection view controller which owns and manages a panel/view of the given GUI framework type.
@@ -18,9 +16,8 @@ public interface IRangeViewControllerProvider
      * @param guiFramework       the GUI framework to use for the view
      * @param rangeConfiguration the state/configuration of the range view
      * @return the panel controller for this range type and GUI framework, if supported
-     * @throws OperationNotSupportedException if the given GUI framework type is not supported by the available panel controllers
      */
-    IRangeViewController createViewController(GuiFrameworkType guiFramework, RangeConfiguration rangeConfiguration) throws OperationNotSupportedException;
+    CONTROL createViewController(GuiFrameworkType guiFramework, RangeConfiguration rangeConfiguration);
 
     /**
      * Query to indicate whether a particular type of ranges and type of GUI framework is supported by

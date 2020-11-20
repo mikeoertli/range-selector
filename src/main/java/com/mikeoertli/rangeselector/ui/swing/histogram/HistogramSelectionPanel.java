@@ -1,15 +1,20 @@
 package com.mikeoertli.rangeselector.ui.swing.histogram;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
 import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.lang.invoke.MethodHandles;
@@ -23,19 +28,7 @@ import java.util.List;
 public class HistogramSelectionPanel extends ARangeSelectionPanel
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int ALPHA = 175;
-    private static final Color DEFAULT_SELECTED_PRIMARY_COLOR = new Color(Color.CYAN.getRed(), Color.CYAN.getGreen(), Color.CYAN.getBlue(), ALPHA);
-    private static final Color DEFAULT_SELECTED_SECONDARY_COLOR = new Color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), ALPHA);
-    private static final Color DEFAULT_UNSELECTED_PRIMARY_COLOR = new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), ALPHA);
-    private static final Color DEFAULT_UNSELECTED_SECONDARY_COLOR = new Color(Color.GRAY.getRed(), Color.GRAY.getGreen(), Color.GRAY.getBlue(), ALPHA);
-
-    private static final int DEFAULT_GAP_BETWEEN_BARS_IN_PIXELS = 2;
-
-    private Color primarySelectedColor = DEFAULT_SELECTED_PRIMARY_COLOR;
-    private Color primaryUnselectedColor = DEFAULT_UNSELECTED_PRIMARY_COLOR;
-    private Color secondarySelectedColor = DEFAULT_SELECTED_SECONDARY_COLOR;
-    private Color secondaryUnselectedColor = DEFAULT_UNSELECTED_SECONDARY_COLOR;
-    private int pixelGapBetweenBars = DEFAULT_GAP_BETWEEN_BARS_IN_PIXELS;
+    private static final int MAX_GAP_BETWEEN_BARS = 5;
 
     public HistogramSelectionPanel(HistogramRangeSelectorPanelController controller)
     {
@@ -84,45 +77,15 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
 
     void setPrimaryLabelText(String value)
     {
-        SwingUtilities.invokeLater(() -> primaryLabel.setText(value));
+        SwingUtilities.invokeLater(() -> primaryLabel.setText("<html><u>" + value + "</u></html>"));
     }
 
     void setSecondaryLabelText(String value)
     {
-        SwingUtilities.invokeLater(() -> secondaryLabel.setText(value));
+        SwingUtilities.invokeLater(() -> secondaryLabel.setText("<html><u>" + value + "</u></html>"));
     }
 
-    void setPrimarySelectedColor(Color primarySelectedColor)
-    {
-        this.primarySelectedColor = primarySelectedColor;
-        updateLegend();
-    }
-
-    void setPrimaryUnselectedColor(Color primaryUnselectedColor)
-    {
-        this.primaryUnselectedColor = primaryUnselectedColor;
-        updateLegend();
-    }
-
-    void setSecondarySelectedColor(Color secondarySelectedColor)
-    {
-        this.secondarySelectedColor = secondarySelectedColor;
-        updateLegend();
-    }
-
-    void setSecondaryUnselectedColor(Color secondaryUnselectedColor)
-    {
-        this.secondaryUnselectedColor = secondaryUnselectedColor;
-        updateLegend();
-    }
-
-    void setPixelGapBetweenBars(int numPixels)
-    {
-        pixelGapBetweenBars = numPixels;
-        refreshView();
-    }
-
-    private void updateLegend()
+    void updateLegend()
     {
         SwingUtilities.invokeLater(() -> {
             legendPanel.revalidate();
@@ -130,11 +93,12 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
         });
     }
 
-    private void createUIComponents() {
-        primarySelectedColorPanel = new ColorLegendPanel(primarySelectedColor);
-        primaryUnselectedColorPanel = new ColorLegendPanel(primaryUnselectedColor);
-        secondarySelectedColorPanel = new ColorLegendPanel(secondarySelectedColor);
-        secondaryUnselectedColorPanel = new ColorLegendPanel(secondaryUnselectedColor);
+    private void createUIComponents()
+    {
+        primarySelectedColorPanel = new ColorLegendPanel(((HistogramRangeSelectorPanelController) controller).getPrimarySelectedColor());
+        primaryUnselectedColorPanel = new ColorLegendPanel(((HistogramRangeSelectorPanelController) controller).getPrimaryUnselectedColor());
+        secondarySelectedColorPanel = new ColorLegendPanel(((HistogramRangeSelectorPanelController) controller).getSecondarySelectedColor());
+        secondaryUnselectedColorPanel = new ColorLegendPanel(((HistogramRangeSelectorPanelController) controller).getSecondaryUnselectedColor());
         histogramPanel = new RenderPanel();
     }
 
@@ -200,8 +164,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
 
             final List<Integer> scaledPrimaryData = getHistogramController().getScaledPrimaryData();
             final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
-            paintDataBars(scaledPrimaryData, graphics, 0, firstSelectedDataIndex, primaryUnselectedColor);
-            paintDataBars(scaledSecondaryData, graphics, 0, firstSelectedDataIndex, secondaryUnselectedColor);
+            paintDataBars(scaledPrimaryData, graphics, 0, firstSelectedDataIndex, ((HistogramRangeSelectorPanelController) controller).getPrimaryUnselectedColor());
+            paintDataBars(scaledSecondaryData, graphics, 0, firstSelectedDataIndex, ((HistogramRangeSelectorPanelController) controller).getSecondaryUnselectedColor());
         }
 
         private void paintSelectedRegion(Graphics graphics, int startOfSelectedRange, int endOfSelectedRange)
@@ -209,8 +173,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
             final int firstSelectedDataIndex = getHistogramDataIndexForPixel(startOfSelectedRange, true);
             final int endSelectedDataIndex = getHistogramDataIndexForPixel(endOfSelectedRange, false);
 
-            paintDataBars(getHistogramController().getScaledPrimaryData(), graphics, firstSelectedDataIndex, endSelectedDataIndex, primarySelectedColor);
-            paintDataBars(getHistogramController().getScaledSecondaryData(), graphics, firstSelectedDataIndex, endSelectedDataIndex, secondarySelectedColor);
+            paintDataBars(getHistogramController().getScaledPrimaryData(), graphics, firstSelectedDataIndex, endSelectedDataIndex, ((HistogramRangeSelectorPanelController) controller).getPrimarySelectedColor());
+            paintDataBars(getHistogramController().getScaledSecondaryData(), graphics, firstSelectedDataIndex, endSelectedDataIndex, ((HistogramRangeSelectorPanelController) controller).getSecondarySelectedColor());
         }
 
         private void paintRegionAfterSelection(Graphics graphics, int endOfSelectedRange)
@@ -221,10 +185,9 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
             {
                 final List<Integer> scaledPrimaryData = getHistogramController().getScaledPrimaryData();
                 final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
-                final int firstBarToDraw = endSelectedDataIndex;
                 final int lastBarToDraw = scaledPrimaryData.size();
-                paintDataBars(scaledPrimaryData, graphics, firstBarToDraw, lastBarToDraw, primaryUnselectedColor);
-                paintDataBars(scaledSecondaryData, graphics, firstBarToDraw, lastBarToDraw, secondaryUnselectedColor);
+                paintDataBars(scaledPrimaryData, graphics, endSelectedDataIndex, lastBarToDraw, ((HistogramRangeSelectorPanelController) controller).getPrimaryUnselectedColor());
+                paintDataBars(scaledSecondaryData, graphics, endSelectedDataIndex, lastBarToDraw, ((HistogramRangeSelectorPanelController) controller).getSecondaryUnselectedColor());
             }
         }
 
@@ -234,25 +197,28 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
             final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
             final int lastBarToDraw = scaledPrimaryData.size();
             final int firstBarToDraw = 0;
-            paintDataBars(scaledPrimaryData, graphics, firstBarToDraw, lastBarToDraw, primaryUnselectedColor);
-            paintDataBars(scaledSecondaryData, graphics, firstBarToDraw, lastBarToDraw, secondaryUnselectedColor);
+            paintDataBars(scaledPrimaryData, graphics, firstBarToDraw, lastBarToDraw, ((HistogramRangeSelectorPanelController) controller).getPrimaryUnselectedColor());
+            paintDataBars(scaledSecondaryData, graphics, firstBarToDraw, lastBarToDraw, ((HistogramRangeSelectorPanelController) controller).getSecondaryUnselectedColor());
         }
 
         private void paintDataBars(List<Integer> scaledDataSet, Graphics graphics, int firstBarToDraw, int lastBarToDraw, Color color)
         {
-            final int barWidth = calculateBarWidth(scaledDataSet.size());
-
-            graphics.setColor(color);
-            final int panelHeight = histogramPanel.getHeight();
-
-            for (int index = firstBarToDraw; index < lastBarToDraw; index++)
+            if (!scaledDataSet.isEmpty())
             {
-                final Integer dataValue = scaledDataSet.get(index);
-                final int barHeight = calculateBarHeight(dataValue);
-                final int startLocX = barWidth * index + pixelGapBetweenBars * index;
-                final int startLocY = panelHeight - barHeight;
+                final int barWidth = calculateBarWidth(scaledDataSet.size());
 
-                graphics.fillRect(startLocX, startLocY, barWidth, barHeight);
+                graphics.setColor(color);
+                final int panelHeight = histogramPanel.getHeight();
+
+                for (int index = firstBarToDraw; index < lastBarToDraw; index++)
+                {
+                    final Integer dataValue = scaledDataSet.get(index);
+                    final int barHeight = calculateBarHeight(dataValue);
+                    final int startLocX = barWidth * index + ((HistogramRangeSelectorPanelController) controller).getPixelGapBetweenBars() * index;
+                    final int startLocY = panelHeight - barHeight;
+
+                    graphics.fillRect(startLocX, startLocY, barWidth, barHeight);
+                }
             }
         }
 
@@ -261,14 +227,18 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
             final int numBins = getHistogramController().getNumBins();
             final Dimension size = histogramPanel.getSize();
             final double totalWidth = size.getWidth();
-            final double percentOfWidthBeforeSelection = 1.0 - ((totalWidth - pixelIndex) / totalWidth);
+            final int barWidth = calculateBarWidth(numBins);
+            final int optimalPixelGap = getOptimalPixelGap((int) totalWidth, numBins);
+
+            final int calculatedDataIndex;
             if (roundDown)
             {
-                return (int) Math.floor(numBins * percentOfWidthBeforeSelection);
+                calculatedDataIndex = (int) Math.floor(1.0 * pixelIndex / (barWidth + optimalPixelGap));
             } else
             {
-                return (int) Math.ceil(numBins * percentOfWidthBeforeSelection);
+                calculatedDataIndex = (int) Math.ceil(1.0 * pixelIndex / (barWidth + optimalPixelGap));
             }
+            return Math.min(numBins, calculatedDataIndex);
         }
 
         private int calculateBarHeight(int value)
@@ -278,8 +248,36 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
 
         private int calculateBarWidth(int numBars)
         {
-            final int numPixelsForBars = histogramPanel.getWidth() - (numBars - 1) * pixelGapBetweenBars;
+            final int currentPixelGapBetweenBars = ((HistogramRangeSelectorPanelController) controller).getPixelGapBetweenBars();
+            final int panelWidth = histogramPanel.getWidth();
+            final int optimalGapWidth = getOptimalPixelGap(panelWidth, numBars);
+            if (optimalGapWidth != currentPixelGapBetweenBars)
+            {
+                ((HistogramRangeSelectorPanelController) controller).setPixelGapBetweenBars(optimalGapWidth);
+            }
+            final int numPixelsForBars = panelWidth - (numBars - 1) * optimalGapWidth;
+
             return numPixelsForBars / numBars;
+        }
+
+        private int getOptimalPixelGap(int panelWidth, int numBars)
+        {
+            int minWastedSpace = panelWidth % numBars;
+            int bestChoice = 0;
+
+            for (int gap = 1; gap <= MAX_GAP_BETWEEN_BARS && ((numBars - 1) * gap) < panelWidth; gap++)
+            {
+                final int numPixelsForBars = panelWidth - ((numBars - 1) * gap);
+                final int wastedSpace = numPixelsForBars % numBars;
+                if (wastedSpace < minWastedSpace)
+                {
+                    logger.trace("Found a better gap size - was {} (result = {}px wasted), now it is {} ({} px wasted).", bestChoice, minWastedSpace, gap, wastedSpace);
+                    minWastedSpace = wastedSpace;
+                    bestChoice = gap;
+                }
+            }
+
+            return bestChoice;
         }
     }
 
@@ -298,6 +296,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
         secUnselectedPanel = new JLabel();
 
         //======== this ========
+        setPreferredSize(new Dimension(500, 230));
+        setMinimumSize(new Dimension(350, 140));
         setName("this");
         setLayout(new BorderLayout());
 
@@ -309,7 +309,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
             {
                 // compute preferred size
                 Dimension preferredSize = new Dimension();
-                for(int i = 0; i < histogramPanel.getComponentCount(); i++) {
+                for (int i = 0; i < histogramPanel.getComponentCount(); i++)
+                {
                     Rectangle bounds = histogramPanel.getComponent(i).getBounds();
                     preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                     preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
@@ -326,35 +327,35 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
         //======== legendPanel ========
         {
             legendPanel.setBorder(new TitledBorder(null, "LEGEND", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION,
-                new Font(".SF NS Text", Font.BOLD, 13)));
+                    new Font(".SF NS Text", Font.BOLD, 13)));
             legendPanel.setName("legendPanel");
             legendPanel.setLayout(new GridBagLayout());
-            ((GridBagLayout)legendPanel.getLayout()).columnWidths = new int[] {0, 75, 0, 0, 93, 0};
-            ((GridBagLayout)legendPanel.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
-            ((GridBagLayout)legendPanel.getLayout()).columnWeights = new double[] {0.0, 0.0, 1.0, 0.0, 0.0, 1.0E-4};
-            ((GridBagLayout)legendPanel.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 1.0E-4};
+            ((GridBagLayout) legendPanel.getLayout()).columnWidths = new int[]{0, 0, 75, 0, 0, 98, 0, 0};
+            ((GridBagLayout) legendPanel.getLayout()).rowHeights = new int[]{0, 0, 0, 0};
+            ((GridBagLayout) legendPanel.getLayout()).columnWeights = new double[]{1.0, 0.0, 0.0, 0.19999999999999998, 0.0, 0.0, 1.0, 1.0E-4};
+            ((GridBagLayout) legendPanel.getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 1.0E-4};
 
             //---- primaryLabel ----
             primaryLabel.setText("PRIMARY");
             primaryLabel.setName("primaryLabel");
-            legendPanel.add(primaryLabel, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 5, 5), 0, 0));
+            legendPanel.add(primaryLabel, new GridBagConstraints(1, 0, 2, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
+                    new Insets(0, 0, 5, 5), 0, 0));
 
             //---- secondaryLabel ----
             secondaryLabel.setText("SECONDARY");
             secondaryLabel.setName("secondaryLabel");
-            legendPanel.add(secondaryLabel, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 5, 0), 0, 0));
+            legendPanel.add(secondaryLabel, new GridBagConstraints(4, 0, 2, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
+                    new Insets(0, 0, 5, 5), 0, 0));
 
             //---- primSelectedLabel ----
             primSelectedLabel.setText("Selected");
             primSelectedLabel.setFont(primSelectedLabel.getFont().deriveFont(primSelectedLabel.getFont().getStyle() | Font.ITALIC, primSelectedLabel.getFont().getSize() - 1f));
             primSelectedLabel.setName("primSelectedLabel");
-            legendPanel.add(primSelectedLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 5, 5), 0, 0));
+            legendPanel.add(primSelectedLabel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
+                    new Insets(0, 0, 5, 5), 0, 0));
 
             //======== primarySelectedColorPanel ========
             {
@@ -364,7 +365,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
                 {
                     // compute preferred size
                     Dimension preferredSize = new Dimension();
-                    for(int i = 0; i < primarySelectedColorPanel.getComponentCount(); i++) {
+                    for (int i = 0; i < primarySelectedColorPanel.getComponentCount(); i++)
+                    {
                         Rectangle bounds = primarySelectedColorPanel.getComponent(i).getBounds();
                         preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                         preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
@@ -376,23 +378,23 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
                     primarySelectedColorPanel.setPreferredSize(preferredSize);
                 }
             }
-            legendPanel.add(primarySelectedColorPanel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 5, 5), 0, 0));
+            legendPanel.add(primarySelectedColorPanel, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 5, 5), 0, 0));
 
             //---- hSpacer1 ----
             hSpacer1.setName("hSpacer1");
-            legendPanel.add(hSpacer1, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 5, 5), 0, 0));
+            legendPanel.add(hSpacer1, new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 5, 5), 0, 0));
 
             //---- secSelectedLabel ----
             secSelectedLabel.setText("Selected");
             secSelectedLabel.setFont(secSelectedLabel.getFont().deriveFont(secSelectedLabel.getFont().getStyle() | Font.ITALIC, secSelectedLabel.getFont().getSize() - 1f));
             secSelectedLabel.setName("secSelectedLabel");
-            legendPanel.add(secSelectedLabel, new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 5, 5), 0, 0));
+            legendPanel.add(secSelectedLabel, new GridBagConstraints(4, 1, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
+                    new Insets(0, 0, 5, 5), 0, 0));
 
             //======== secondarySelectedColorPanel ========
             {
@@ -402,7 +404,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
                 {
                     // compute preferred size
                     Dimension preferredSize = new Dimension();
-                    for(int i = 0; i < secondarySelectedColorPanel.getComponentCount(); i++) {
+                    for (int i = 0; i < secondarySelectedColorPanel.getComponentCount(); i++)
+                    {
                         Rectangle bounds = secondarySelectedColorPanel.getComponent(i).getBounds();
                         preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                         preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
@@ -414,17 +417,17 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
                     secondarySelectedColorPanel.setPreferredSize(preferredSize);
                 }
             }
-            legendPanel.add(secondarySelectedColorPanel, new GridBagConstraints(4, 1, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 5, 0), 0, 0));
+            legendPanel.add(secondarySelectedColorPanel, new GridBagConstraints(5, 1, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 5, 5), 0, 0));
 
             //---- primUnselectedLabel ----
             primUnselectedLabel.setText("Unselected");
             primUnselectedLabel.setFont(primUnselectedLabel.getFont().deriveFont(primUnselectedLabel.getFont().getStyle() | Font.ITALIC, primUnselectedLabel.getFont().getSize() - 1f));
             primUnselectedLabel.setName("primUnselectedLabel");
-            legendPanel.add(primUnselectedLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
-                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 0, 5), 0, 0));
+            legendPanel.add(primUnselectedLabel, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
+                    new Insets(0, 0, 0, 5), 0, 0));
 
             //======== primaryUnselectedColorPanel ========
             {
@@ -434,7 +437,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
                 {
                     // compute preferred size
                     Dimension preferredSize = new Dimension();
-                    for(int i = 0; i < primaryUnselectedColorPanel.getComponentCount(); i++) {
+                    for (int i = 0; i < primaryUnselectedColorPanel.getComponentCount(); i++)
+                    {
                         Rectangle bounds = primaryUnselectedColorPanel.getComponent(i).getBounds();
                         preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                         preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
@@ -446,17 +450,17 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
                     primaryUnselectedColorPanel.setPreferredSize(preferredSize);
                 }
             }
-            legendPanel.add(primaryUnselectedColorPanel, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 5), 0, 0));
+            legendPanel.add(primaryUnselectedColorPanel, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 0, 5), 0, 0));
 
             //---- secUnselectedPanel ----
             secUnselectedPanel.setText("Unselected");
             secUnselectedPanel.setFont(secUnselectedPanel.getFont().deriveFont(secUnselectedPanel.getFont().getStyle() | Font.ITALIC, secUnselectedPanel.getFont().getSize() - 1f));
             secUnselectedPanel.setName("secUnselectedPanel");
-            legendPanel.add(secUnselectedPanel, new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0,
-                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 0, 5), 0, 0));
+            legendPanel.add(secUnselectedPanel, new GridBagConstraints(4, 2, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
+                    new Insets(0, 0, 0, 5), 0, 0));
 
             //======== secondaryUnselectedColorPanel ========
             {
@@ -466,7 +470,8 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
                 {
                     // compute preferred size
                     Dimension preferredSize = new Dimension();
-                    for(int i = 0; i < secondaryUnselectedColorPanel.getComponentCount(); i++) {
+                    for (int i = 0; i < secondaryUnselectedColorPanel.getComponentCount(); i++)
+                    {
                         Rectangle bounds = secondaryUnselectedColorPanel.getComponent(i).getBounds();
                         preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                         preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
@@ -478,9 +483,9 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
                     secondaryUnselectedColorPanel.setPreferredSize(preferredSize);
                 }
             }
-            legendPanel.add(secondaryUnselectedColorPanel, new GridBagConstraints(4, 2, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
+            legendPanel.add(secondaryUnselectedColorPanel, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 0, 5), 0, 0));
         }
         add(legendPanel, BorderLayout.SOUTH);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents

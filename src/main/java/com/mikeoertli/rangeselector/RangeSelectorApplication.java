@@ -1,7 +1,9 @@
 package com.mikeoertli.rangeselector;
 
+import com.mikeoertli.rangeselector.app.ThirdPartyApp;
 import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramRangeSelectorPanelController;
 import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectorPanelController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,24 +28,27 @@ public class RangeSelectorApplication
                 .run(args);
     }
 
-    public RangeSelectorApplication()
+    @Autowired
+    public RangeSelectorApplication(ThirdPartyApp thirdPartyApp)
     {
-        JDialog simpleDialog = new JDialog();
-        simpleDialog.setSize(400, 100);
-        SimpleRangeSelectorPanelController simpleController = new SimpleRangeSelectorPanelController();
-        simpleDialog.add(simpleController.getPanel());
-        simpleDialog.setVisible(true);
-        simpleDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        JDialog histogramDialog = new JDialog();
-        histogramDialog.setSize(400, 200);
-        HistogramRangeSelectorPanelController histogramController = new HistogramRangeSelectorPanelController();
-        List<Integer> primaryData = Arrays.asList(10, 5, 15, 2, 14, 3, 0, 9);
-        List<Integer> secondaryData = Arrays.asList(1, 8, 0, 0, 20, 12, 4, 13);
-        histogramController.setPrimaryDataPoints(primaryData);
-        histogramController.setSecondaryDataPoints(secondaryData);
-        histogramDialog.add(histogramController.getPanel());
-        histogramDialog.setVisible(true);
-        histogramDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        thirdPartyApp.runDemo();
+//        JDialog simpleDialog = new JDialog();
+//        simpleDialog.setSize(400, 100);
+//        SimpleRangeSelectorPanelController simpleController = new SimpleRangeSelectorPanelController();
+//        simpleDialog.add(simpleController.getPanel());
+//        simpleDialog.setVisible(true);
+//        simpleDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//
+//        JDialog histogramDialog = new JDialog();
+//        histogramDialog.setSize(400, 200);
+//        HistogramRangeSelectorPanelController histogramController = new HistogramRangeSelectorPanelController();
+//        List<Integer> primaryData = Arrays.asList(10, 5, 15, 2, 14, 3, 0, 9);
+//        List<Integer> secondaryData = Arrays.asList(1, 8, 0, 0, 20, 12, 4, 13);
+//        histogramController.setPrimaryDataPoints(primaryData);
+//        histogramController.setSecondaryDataPoints(secondaryData);
+//        histogramDialog.add(histogramController.getPanel());
+//        histogramDialog.setVisible(true);
+//        histogramDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 }

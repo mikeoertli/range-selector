@@ -1,25 +1,24 @@
-package com.mikeoertli.rangeselector.core;
+package com.mikeoertli.rangeselector.core.provider;
 
 import com.mikeoertli.rangeselector.api.IRangeType;
-import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.data.rangetype.FrequencyUnits;
 import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramRangeSelectorPanelController;
-
-import javax.naming.OperationNotSupportedException;
+import org.springframework.stereotype.Component;
 
 /**
  * Manages all things related to a range selection GUI and I/O
  *
  * @since 0.0.1
  */
-public class FrequencyRangeViewControllerProvider implements IRangeViewControllerProvider
+@Component
+public class FrequencyRangeViewControllerProvider implements IRangeViewControllerProvider<HistogramRangeSelectorPanelController>
 {
 
     @Override
-    public IRangeViewController createViewController(GuiFrameworkType guiFramework, RangeConfiguration rangeConfiguration) throws OperationNotSupportedException
+    public HistogramRangeSelectorPanelController createViewController(GuiFrameworkType guiFramework, RangeConfiguration rangeConfiguration)
     {
         if (GuiFrameworkType.SWING == guiFramework)
         {
@@ -31,7 +30,7 @@ public class FrequencyRangeViewControllerProvider implements IRangeViewControlle
             return controller;
         } else
         {
-            throw new OperationNotSupportedException(guiFramework + " is not a supported GUI framework.");
+            throw new IllegalArgumentException(guiFramework + " is not a supported GUI framework.");
         }
     }
 

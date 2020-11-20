@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,21 +35,30 @@ public class RangeConfiguration
 
     protected Instant lastUpdateTime;
 
+    protected String primaryLabel;
+    protected String secondaryLabel;
+
+    protected final List<Integer> primaryData;
+    protected final List<Integer> secondaryData;
+
     public RangeConfiguration()
     {
-        this(DEFAULT_RANGE_MINIMUM, DEFAULT_RANGE_MAXIMUM, null, null);
+        this(DEFAULT_RANGE_MINIMUM, DEFAULT_RANGE_MAXIMUM, null, null, new ArrayList<>(), new ArrayList<>(),
+                null, null);
     }
 
     public RangeConfiguration(RangeConfiguration toClone)
     {
-        this(toClone.getRangeMin(), toClone.getRangeMax(), toClone.getFullDescription(), toClone.getShortLabel());
+        this(toClone.getRangeMin(), toClone.getRangeMax(), toClone.getFullDescription(), toClone.getShortLabel(),
+                toClone.getPrimaryData(), toClone.getSecondaryData(), toClone.getPrimaryLabel(), toClone.getSecondaryLabel());
         setSelectionMin(toClone.getSelectionMin());
         setSelectionMax(toClone.getSelectionMax());
         setLocked(toClone.isLocked());
         lastUpdateTime = toClone.getLastUpdateTime();
     }
 
-    public RangeConfiguration(int rangeMin, int rangeMax, String fullDescription, String shortLabel)
+    public RangeConfiguration(int rangeMin, int rangeMax, String fullDescription, String shortLabel, List<Integer> primaryData,
+                              List<Integer> secondaryData, String primaryLabel, String secondaryLabel)
     {
         this.rangeMin = rangeMin;
         this.rangeMax = rangeMax;
@@ -54,9 +66,57 @@ public class RangeConfiguration
         this.fullDescription = fullDescription;
         this.shortLabel = shortLabel;
 
+        this.primaryData = new ArrayList<>(primaryData);
+        this.secondaryData = new ArrayList<>(secondaryData);
+
+        this.primaryLabel = primaryLabel;
+        this.secondaryLabel = secondaryLabel;
+
         onStateUpdated();
 
         logger.trace("Initialized state: {}", this);
+    }
+
+    public List<Integer> getPrimaryData()
+    {
+        return Collections.unmodifiableList(primaryData);
+    }
+
+    public List<Integer> getSecondaryData()
+    {
+        return Collections.unmodifiableList(secondaryData);
+    }
+
+    public void setPrimaryData(List<Integer> data)
+    {
+        primaryData.clear();
+        primaryData.addAll(data);
+    }
+
+    public void setSecondaryData(List<Integer> data)
+    {
+        secondaryData.clear();
+        secondaryData.addAll(data);
+    }
+
+    public String getPrimaryLabel()
+    {
+        return primaryLabel;
+    }
+
+    public void setPrimaryLabel(String primaryLabel)
+    {
+        this.primaryLabel = primaryLabel;
+    }
+
+    public String getSecondaryLabel()
+    {
+        return secondaryLabel;
+    }
+
+    public void setSecondaryLabel(String secondaryLabel)
+    {
+        this.secondaryLabel = secondaryLabel;
     }
 
     public String getShortLabel()
@@ -159,28 +219,6 @@ public class RangeConfiguration
         return lastUpdateTime;
     }
 
-    public void update(RangeConfiguration updatedConfig)
-    {
-        if (updatedConfig.getRangeMax() != rangeMax || updatedConfig.getRangeMin() != rangeMin)
-        {
-            logger.warn("Cannot update the RangeConfiguration which has a range of {} to {} using another " +
-                            "RangeConfiguration with range {} to {}.", rangeMin, rangeMax, updatedConfig.getRangeMin(),
-                    updatedConfig.getRangeMax());
-            return;
-        }
-
-        setLocked(updatedConfig.isLocked());
-
-        if (updatedConfig.hasSelection())
-        {
-            setSelectionMin(updatedConfig.getSelectionMin());
-            setSelectionMax(updatedConfig.getSelectionMax());
-        } else
-        {
-            clearSelection();
-        }
-    }
-
     public void clearSelection()
     {
         setSelectionMin(NO_SELECTION);
@@ -192,9 +230,15 @@ public class RangeConfiguration
         lastUpdateTime = Instant.now();
     }
 
-    public void setSelectedRange(Range<Integer> selectedRange)
+    public int getDataAbsoluteMax()
     {
-        setSelectionMin(selectedRange.getMinimum());
-        setSelectionMax(selectedRange.getMaximum());
+        final int maxPrimaryDataPoint = primaryData.stream().mapToInt(i -> i).max().orElse(0);
+        final int maxSecondaryDataPoint = secondaryData.stream().mapToInt(i -> i).max().orElse(0);
+        return Math.max(maxPrimaryDataPoint, maxSecondaryDataPoint);
+    }
+
+    public int getDataSize()
+    {
+        return primaryData.size();
     }
 }

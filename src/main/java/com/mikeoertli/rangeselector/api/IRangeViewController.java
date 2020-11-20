@@ -77,4 +77,24 @@ public interface IRangeViewController
      * @return the maximum possible selectable index
      */
     int getSelectableRangeMaximum();
+
+    /**
+     * Handle a resize event, generally triggered by a component/size listener on the parent view container
+     */
+    void onViewResized();
+
+//    /**
+//     * This provides a view controller the mechanism for "snapping" a parent view to a given size so that its
+//     * view is more appropriately sized. This basically says that the reference width is the proposed width and
+//     * the view controller returns the adjusted width that it would like to use instead.
+//     *
+//     * @param referenceWidth the width of the view that is "proposed" (i.e expected to be used)
+//     * @return the total width required to show the primary/secondary data
+//     */
+//    int getAdjustedViewWidth(int referenceWidth);
+
+    /**
+     * @return the absolute minimum width that can be supported by the view
+     */
+    int getMinimumViewWidth();
 }
