@@ -1,3 +1,5 @@
+![Logo](doc/range-selection-icon-256.png)
+
 # Range Selector
 This is a utility for generating a GUI and related controllers/providers to obtain a selectable range. The initial target
 is for selecting a frequency range in a simple and intuitive way.

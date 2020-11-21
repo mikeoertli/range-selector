@@ -1,5 +1,6 @@
-package com.mikeoertli.rangeselector.app;
+package com.mikeoertli.rangeselector.demo;
 
+import com.mikeoertli.rangeselector.Constants;
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
 import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
@@ -9,6 +10,8 @@ import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.data.rangetype.FrequencyUnits;
 import com.mikeoertli.rangeselector.data.rangetype.SimpleCount;
+import com.mikeoertli.rangeselector.demo.ui.DemoSelectionDialog;
+import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
 import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramRangeSelectorPanelController;
 import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectorPanelController;
 import org.slf4j.Logger;
@@ -18,7 +21,11 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import java.awt.Image;
+import java.awt.Taskbar;
+import java.awt.Toolkit;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +63,7 @@ public class ThirdPartyApp
                         "Frequency (MHz)", "Frequency", primaryData, secondaryData,
                         "# Targets", "# Detections");
 
-                controller = ((FrequencyRangeViewControllerProvider) provider)
-                        .createViewController(GuiFrameworkType.SWING, rangeConfiguration);
+                controller = ((FrequencyRangeViewControllerProvider) provider).createSwingViewController(rangeConfiguration, null);
 
                 List<Integer> smallPrimary = buildRandomDataSet(5, 0, 20);
                 List<Integer> smallSecondary = buildRandomDataSet(5, 0, 5);
@@ -65,8 +71,7 @@ public class ThirdPartyApp
                         "Frequency (MHz)", "Frequency", smallPrimary, smallSecondary,
                         "# Targets", "# Detections");
 
-                smallSimController = ((FrequencyRangeViewControllerProvider) provider)
-                        .createViewController(GuiFrameworkType.SWING, smallRangeConfig);
+                smallSimController = ((FrequencyRangeViewControllerProvider) provider).createSwingViewController(smallRangeConfig, null);
             }
         });
 
@@ -75,7 +80,7 @@ public class ThirdPartyApp
 
         simpleProvider.ifPresent(provider -> {
             RangeConfiguration config = new RangeConfiguration();
-            simpleController = (SimpleRangeSelectorPanelController) provider.createViewController(GuiFrameworkType.SWING, config);
+            simpleController = (SimpleRangeSelectorPanelController) provider.createSwingViewController(config, null);
         });
     }
 
@@ -93,48 +98,51 @@ public class ThirdPartyApp
 
     public void runDemo()
     {
-        if (simpleController != null)
-        {
-            final IRangeSelectorView view = simpleController.getView();
-            final JDialog dialog = new JDialog();
-            dialog.setTitle("SIMPLE Demo App");
-            final JPanel freqSelectionPanel = (JPanel) view;
-            dialog.setSize(freqSelectionPanel.getPreferredSize());
-            dialog.getContentPane().add(freqSelectionPanel);
-            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            dialog.setVisible(true);
-        }
+        DemoSelectionDialog demoSelectionDialog = new DemoSelectionDialog(this);
+        demoSelectionDialog.setTitle(Constants.DEMO_APP_NAME);
+        demoSelectionDialog.setVisible(true);
+    }
 
-        if (controller != null)
-        {
-            final IRangeSelectorView view = controller.getView();
-            final JDialog dialog = new JDialog();
-            dialog.setTitle("Demo App");
-            final JPanel freqSelectionPanel = (JPanel) view;
-            dialog.setSize(freqSelectionPanel.getPreferredSize());
-            dialog.getContentPane().add(freqSelectionPanel);
-            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            dialog.setVisible(true);
-        } else
-        {
-            logger.error("Invalid configuration, could not create range selection view.");
-        }
+    public void showSimpleDemo()
+    {
 
-        if (smallSimController != null)
-        {
+        showDialog(simpleController, "Simple Demo");
+    }
 
-            final IRangeSelectorView view = smallSimController.getView();
+    public void showSmallHistogramDemo()
+    {
+        showDialog(smallSimController, "Demo Histogram (SMALL)");
+    }
 
-            final JDialog dialog = new JDialog();
-            dialog.setTitle("Demo App (SMALL)");
-            final JPanel freqSelectionPanel = (JPanel) view;
-            dialog.setSize(freqSelectionPanel.getPreferredSize());
-            dialog.getContentPane().add(freqSelectionPanel);
-            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            dialog.setVisible(true);
-        } else
-        {
-            logger.error("Invalid configuration, could not create range selection view for small demo app.");
-        }
+    public void showLargeHistogramDemo()
+    {
+        showDialog(controller, "Demo Histogram");
+    }
+
+    protected void showDialog(ASwingRangeViewController controller, String panelTitle)
+    {
+        SwingUtilities.invokeLater(() -> {
+            if (controller != null)
+            {
+                final IRangeSelectorView view = controller.getView();
+                final JDialog dialog = new JDialog();
+                dialog.setTitle(panelTitle);
+                final Image image = Toolkit.getDefaultToolkit().getImage(ThirdPartyApp.class.getClassLoader().getResource(Constants.RANGE_SELECTOR_ICON_32X32_PATH));
+                dialog.setIconImage(image);
+                final Taskbar taskbar = Taskbar.getTaskbar();
+                taskbar.setIconImage(image);
+
+                final JPanel panel = (JPanel) view;
+                dialog.setSize(panel.getPreferredSize());
+                dialog.getContentPane().add(panel);
+                dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                dialog.setModal(true);
+                dialog.pack();
+                dialog.setVisible(true);
+            } else
+            {
+                logger.error("Invalid configuration, could not create range selection view for " + panelTitle);
+            }
+        });
     }
 }

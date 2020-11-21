@@ -1,5 +1,6 @@
 package com.mikeoertli.rangeselector.ui.swing.histogram;
 
+import com.mikeoertli.rangeselector.api.IViewStyleProvider;
 import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,6 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
     @Override
     public void reset()
     {
-        // TODO
         logger.trace("Resetting {}", getClass().getSimpleName());
     }
 
@@ -95,10 +95,11 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
 
     private void createUIComponents()
     {
-        primarySelectedColorPanel = new ColorLegendPanel(((HistogramRangeSelectorPanelController) controller).getPrimarySelectedColor());
-        primaryUnselectedColorPanel = new ColorLegendPanel(((HistogramRangeSelectorPanelController) controller).getPrimaryUnselectedColor());
-        secondarySelectedColorPanel = new ColorLegendPanel(((HistogramRangeSelectorPanelController) controller).getSecondarySelectedColor());
-        secondaryUnselectedColorPanel = new ColorLegendPanel(((HistogramRangeSelectorPanelController) controller).getSecondaryUnselectedColor());
+        final IViewStyleProvider styleProvider = controller.getViewStyleProvider();
+        primarySelectedColorPanel = new ColorLegendPanel(styleProvider.getPrimarySelectedColor());
+        primaryUnselectedColorPanel = new ColorLegendPanel(styleProvider.getPrimaryUnselectedColor());
+        secondarySelectedColorPanel = new ColorLegendPanel(styleProvider.getSecondarySelectedColor());
+        secondaryUnselectedColorPanel = new ColorLegendPanel(styleProvider.getSecondaryUnselectedColor());
         histogramPanel = new RenderPanel();
     }
 
@@ -161,33 +162,36 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
         private void paintRegionBeforeSelection(Graphics graphics, int startOfSelectedRange)
         {
             final int firstSelectedDataIndex = getHistogramDataIndexForPixel(startOfSelectedRange, true);
+            final IViewStyleProvider styleProvider = controller.getViewStyleProvider();
 
             final List<Integer> scaledPrimaryData = getHistogramController().getScaledPrimaryData();
             final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
-            paintDataBars(scaledPrimaryData, graphics, 0, firstSelectedDataIndex, ((HistogramRangeSelectorPanelController) controller).getPrimaryUnselectedColor());
-            paintDataBars(scaledSecondaryData, graphics, 0, firstSelectedDataIndex, ((HistogramRangeSelectorPanelController) controller).getSecondaryUnselectedColor());
+            paintDataBars(scaledPrimaryData, graphics, 0, firstSelectedDataIndex, styleProvider.getPrimaryUnselectedColor());
+            paintDataBars(scaledSecondaryData, graphics, 0, firstSelectedDataIndex, styleProvider.getSecondaryUnselectedColor());
         }
 
         private void paintSelectedRegion(Graphics graphics, int startOfSelectedRange, int endOfSelectedRange)
         {
             final int firstSelectedDataIndex = getHistogramDataIndexForPixel(startOfSelectedRange, true);
             final int endSelectedDataIndex = getHistogramDataIndexForPixel(endOfSelectedRange, false);
+            final IViewStyleProvider styleProvider = controller.getViewStyleProvider();
 
-            paintDataBars(getHistogramController().getScaledPrimaryData(), graphics, firstSelectedDataIndex, endSelectedDataIndex, ((HistogramRangeSelectorPanelController) controller).getPrimarySelectedColor());
-            paintDataBars(getHistogramController().getScaledSecondaryData(), graphics, firstSelectedDataIndex, endSelectedDataIndex, ((HistogramRangeSelectorPanelController) controller).getSecondarySelectedColor());
+            paintDataBars(getHistogramController().getScaledPrimaryData(), graphics, firstSelectedDataIndex, endSelectedDataIndex, styleProvider.getPrimarySelectedColor());
+            paintDataBars(getHistogramController().getScaledSecondaryData(), graphics, firstSelectedDataIndex, endSelectedDataIndex, styleProvider.getSecondarySelectedColor());
         }
 
         private void paintRegionAfterSelection(Graphics graphics, int endOfSelectedRange)
         {
             final int endSelectedDataIndex = getHistogramDataIndexForPixel(endOfSelectedRange, false);
+            final IViewStyleProvider styleProvider = controller.getViewStyleProvider();
 
             if (getHistogramController().getNumBins() > endSelectedDataIndex)
             {
                 final List<Integer> scaledPrimaryData = getHistogramController().getScaledPrimaryData();
                 final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
                 final int lastBarToDraw = scaledPrimaryData.size();
-                paintDataBars(scaledPrimaryData, graphics, endSelectedDataIndex, lastBarToDraw, ((HistogramRangeSelectorPanelController) controller).getPrimaryUnselectedColor());
-                paintDataBars(scaledSecondaryData, graphics, endSelectedDataIndex, lastBarToDraw, ((HistogramRangeSelectorPanelController) controller).getSecondaryUnselectedColor());
+                paintDataBars(scaledPrimaryData, graphics, endSelectedDataIndex, lastBarToDraw, styleProvider.getPrimaryUnselectedColor());
+                paintDataBars(scaledSecondaryData, graphics, endSelectedDataIndex, lastBarToDraw, styleProvider.getSecondaryUnselectedColor());
             }
         }
 
@@ -197,8 +201,9 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
             final List<Integer> scaledSecondaryData = getHistogramController().getScaledSecondaryData();
             final int lastBarToDraw = scaledPrimaryData.size();
             final int firstBarToDraw = 0;
-            paintDataBars(scaledPrimaryData, graphics, firstBarToDraw, lastBarToDraw, ((HistogramRangeSelectorPanelController) controller).getPrimaryUnselectedColor());
-            paintDataBars(scaledSecondaryData, graphics, firstBarToDraw, lastBarToDraw, ((HistogramRangeSelectorPanelController) controller).getSecondaryUnselectedColor());
+            final IViewStyleProvider styleProvider = controller.getViewStyleProvider();
+            paintDataBars(scaledPrimaryData, graphics, firstBarToDraw, lastBarToDraw, styleProvider.getPrimaryUnselectedColor());
+            paintDataBars(scaledSecondaryData, graphics, firstBarToDraw, lastBarToDraw, styleProvider.getSecondaryUnselectedColor());
         }
 
         private void paintDataBars(List<Integer> scaledDataSet, Graphics graphics, int firstBarToDraw, int lastBarToDraw, Color color)
@@ -209,12 +214,13 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
 
                 graphics.setColor(color);
                 final int panelHeight = histogramPanel.getHeight();
+                final IViewStyleProvider styleProvider = controller.getViewStyleProvider();
 
                 for (int index = firstBarToDraw; index < lastBarToDraw; index++)
                 {
                     final Integer dataValue = scaledDataSet.get(index);
                     final int barHeight = calculateBarHeight(dataValue);
-                    final int startLocX = barWidth * index + ((HistogramRangeSelectorPanelController) controller).getPixelGapBetweenBars() * index;
+                    final int startLocX = barWidth * index + styleProvider.getPixelGapBetweenBars() * index;
                     final int startLocY = panelHeight - barHeight;
 
                     graphics.fillRect(startLocX, startLocY, barWidth, barHeight);
@@ -248,12 +254,13 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
 
         private int calculateBarWidth(int numBars)
         {
-            final int currentPixelGapBetweenBars = ((HistogramRangeSelectorPanelController) controller).getPixelGapBetweenBars();
+            final IViewStyleProvider styleProvider = controller.getViewStyleProvider();
+            final int currentPixelGapBetweenBars = styleProvider.getPixelGapBetweenBars();
             final int panelWidth = histogramPanel.getWidth();
             final int optimalGapWidth = getOptimalPixelGap(panelWidth, numBars);
             if (optimalGapWidth != currentPixelGapBetweenBars)
             {
-                ((HistogramRangeSelectorPanelController) controller).setPixelGapBetweenBars(optimalGapWidth);
+                styleProvider.setPixelGapBetweenBars(optimalGapWidth);
             }
             final int numPixelsForBars = panelWidth - (numBars - 1) * optimalGapWidth;
 

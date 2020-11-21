@@ -1,5 +1,6 @@
 package com.mikeoertli.rangeselector.core.provider;
 
+import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
 import com.mikeoertli.rangeselector.api.IRangeType;
 import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
@@ -18,20 +19,9 @@ public class FrequencyRangeViewControllerProvider implements IRangeViewControlle
 {
 
     @Override
-    public HistogramRangeSelectorPanelController createViewController(GuiFrameworkType guiFramework, RangeConfiguration rangeConfiguration)
+    public HistogramRangeSelectorPanelController createSwingViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
     {
-        if (GuiFrameworkType.SWING == guiFramework)
-        {
-            final HistogramRangeSelectorPanelController controller = new HistogramRangeSelectorPanelController();
-            if (rangeConfiguration != null)
-            {
-                controller.restoreState(rangeConfiguration);
-            }
-            return controller;
-        } else
-        {
-            throw new IllegalArgumentException(guiFramework + " is not a supported GUI framework.");
-        }
+        return new HistogramRangeSelectorPanelController(rangeConfiguration, selectionListener);
     }
 
     @Override

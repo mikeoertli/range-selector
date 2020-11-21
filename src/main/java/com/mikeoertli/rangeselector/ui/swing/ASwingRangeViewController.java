@@ -1,19 +1,21 @@
 package com.mikeoertli.rangeselector.ui.swing;
 
+import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
+import com.mikeoertli.rangeselector.api.IViewStyleProvider;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionMouseListener;
+import com.mikeoertli.rangeselector.ui.swing.common.PanelSizeChangeListener;
+import com.mikeoertli.rangeselector.ui.swing.common.ViewStyleConfiguration;
+import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionMouseHandler;
 import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JPanel;
-import javax.swing.Timer;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,26 +28,78 @@ public abstract class ASwingRangeViewController implements ISwingViewController
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * The {@link UUID} of the panel/controller can be used to uniquely identify them.
+     * This is auto-generated and can be retrieved via {@link #getUuid()}
+     */
     private final UUID uuid;
-    protected IRangeSelectorView panel;
-    protected final RangeSelectionMouseListener selectionListener;
+
+    /**
+     * The range selection view is the {@link java.awt.Panel} which this controller manages
+     */
+    protected ARangeSelectionPanel panel;
+
+    /**
+     * The handler of mouse input, responsible for extracting the selected range so that it can be properly rendered
+     */
+    protected final RangeSelectionMouseHandler mouseInputHandler;
+
+    /**
+     * The range configuration that currently represents the state of the {@link ARangeSelectionPanel}.
+     * This can be provided when constructed or restored via {@link #restoreState(RangeConfiguration)}
+     */
     protected RangeConfiguration rangeConfiguration;
-    protected final PanelSizeListener sizeChangeListener;
+
+    /**
+     * Listens to changes in the size of the view which can then notify this controller that ranges need to be
+     * recalculated and the view re-drawn
+     */
+    protected final PanelSizeChangeListener sizeChangeListener;
+
+    /**
+     * Provider of the view style, i.e. colors to be used when creating the view
+     */
+    protected final IViewStyleProvider styleProvider;
+
+    /**
+     * The listeners to be notified of any changes to the selection. This is most commonly the user of the API
+     * which is requesting this range selection view in the first place so that it can handle whatever changes
+     * it requires when the selection changes.
+     */
+    protected final List<IRangeSelectionListener> selectionListeners = new ArrayList<>();
 
     protected ASwingRangeViewController()
     {
-        this(new RangeConfiguration());
+        this(new RangeConfiguration(), null);
     }
 
-    protected ASwingRangeViewController(RangeConfiguration rangeConfiguration)
+    protected ASwingRangeViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
     {
         uuid = UUID.randomUUID();
         this.rangeConfiguration = rangeConfiguration;
-        selectionListener = new RangeSelectionMouseListener(this);
-        sizeChangeListener = new PanelSizeListener();
+        mouseInputHandler = new RangeSelectionMouseHandler(this);
+        sizeChangeListener = new PanelSizeChangeListener(this);
+        styleProvider = new ViewStyleConfiguration(this);
+        if (selectionListener != null)
+        {
+            selectionListeners.add(selectionListener);
+        }
     }
 
-    protected abstract IRangeSelectorView createPanel();
+    /**
+     * Required for implementations to create their own panel since there will be specific initialization
+     * necessary in many cases. This also moves the panel construction out of the constructor for a potential
+     * performance improvement.
+     * <p>
+     * It is imperative tha the implementing class performs this, and all Swing rendering functions, on the
+     * AWT Event Dispatch Thread (EDT) as is common practice in Swing.
+     * <p>
+     * Reference: https://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
+     * Reference: http://www.fredosaurus.com/JavaBasics/gui/gui-commentary/guicom-main-thread.html
+     *
+     * @return the constructed panel ready for display
+     */
+    protected abstract ARangeSelectionPanel createPanel();
 
     @Override
     public GuiFrameworkType getSupportedGuiFramework()
@@ -59,7 +113,7 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         if (panel == null)
         {
             panel = createPanel();
-            panel.addRangeSelectionListener(selectionListener);
+            panel.addMouseInputHandler(mouseInputHandler);
             ((JPanel) panel).addComponentListener(sizeChangeListener);
         }
         return panel;
@@ -77,9 +131,9 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         final RangeConfiguration oldConfig = new RangeConfiguration(rangeConfiguration);
         rangeConfiguration = updatedConfiguration;
 
-        selectionListener.setSelectedRange(rangeConfiguration.getSelectionMin(), rangeConfiguration.getSelectionMax());
+        mouseInputHandler.setSelectedRange(rangeConfiguration.getSelectionMin(), rangeConfiguration.getSelectionMax());
 
-        refreshPanel();
+        onViewConfigurationChanged();
 
         return Optional.of(oldConfig);
     }
@@ -96,7 +150,7 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         if (panel != null)
         {
             panel.reset();
-            panel.removeRangeSelectionListener(selectionListener);
+            panel.removeMouseInputHandler(mouseInputHandler);
             ((JPanel) panel).removeComponentListener(sizeChangeListener);
         }
 
@@ -108,64 +162,60 @@ public abstract class ASwingRangeViewController implements ISwingViewController
     {
         rangeConfiguration.setSelectionMin(selectionMin);
         rangeConfiguration.setSelectionMax(selectionMax);
-        refreshPanel();
+        onViewConfigurationChanged();
+        if (selectionMin == -1 && selectionMax == -1)
+        {
+            selectionListeners.forEach(IRangeSelectionListener::onRangeSelectionCleared);
+        } else
+        {
+            selectionListeners.forEach(listener ->
+                    listener.onRangeSelected(rangeConfiguration.getRangeMin(), rangeConfiguration.getRangeMax(), selectionMin, selectionMax));
+        }
     }
 
     @Override
     public void selectAll()
     {
-        onRangeSelectionChanged(getSelectableRangeMinimum(), getSelectableRangeMaximum());
+        onRangeSelectionChanged(rangeConfiguration.getRangeMin(), rangeConfiguration.getRangeMax());
     }
 
     @Override
-    public int getSelectableRangeMinimum()
+    public void addRangeSelectionListener(IRangeSelectionListener listener)
     {
-        return rangeConfiguration.getRangeMin();
+        if (listener != null)
+        {
+            selectionListeners.add(listener);
+        }
     }
 
     @Override
-    public int getSelectableRangeMaximum()
+    public void removeRangeSelectionListener(IRangeSelectionListener listener)
     {
-        return rangeConfiguration.getRangeMax();
+        if (listener != null)
+        {
+            selectionListeners.remove(listener);
+        }
     }
 
     @Override
-    public void onViewResized()
+    public void onViewSizeChanged()
     {
         rangeConfiguration.setRangeMax(getPanel().getWidth());
-        refreshPanel();
+        onViewConfigurationChanged();
     }
 
-    protected void refreshPanel()
+    @Override
+    public IViewStyleProvider getViewStyleProvider()
+    {
+        return styleProvider;
+    }
+
+    @Override
+    public void onViewConfigurationChanged()
     {
         if (panel != null)
         {
             panel.refreshView();
-        }
-    }
-
-    private class PanelSizeListener extends ComponentAdapter
-    {
-        private Timer resizeCompleteTimer;
-        private static final int RESIZE_TIMER_WAIT_MS = 100;
-
-        @Override
-        public void componentResized(ComponentEvent e)
-        {
-
-            if (resizeCompleteTimer == null)
-            {
-                ActionListener actionListener = e1 -> {
-                    resizeCompleteTimer.stop();
-                    resizeCompleteTimer = null;
-                    onViewResized();
-                };
-                resizeCompleteTimer = new Timer(RESIZE_TIMER_WAIT_MS, actionListener);
-                resizeCompleteTimer.start();
-            } else
-            {
-                resizeCompleteTimer.restart();
-            }
         }
     }
 }

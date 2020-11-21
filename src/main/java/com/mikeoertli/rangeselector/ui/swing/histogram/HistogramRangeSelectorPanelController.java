@@ -1,13 +1,14 @@
 package com.mikeoertli.rangeselector.ui.swing.histogram;
 
+import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
-import com.mikeoertli.rangeselector.api.IViewStyleProvider;
+import com.mikeoertli.rangeselector.data.RangeConfiguration;
+import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
 import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.awt.Color;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,31 +18,17 @@ import java.util.stream.Collectors;
  *
  * @since 0.0.1
  */
-public class HistogramRangeSelectorPanelController extends ASwingRangeViewController implements IViewStyleProvider
+public class HistogramRangeSelectorPanelController extends ASwingRangeViewController
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final int ALPHA = 175; // 0-255
-    private static final Color DEFAULT_SELECTED_PRIMARY_COLOR = new Color(Color.CYAN.getRed(), Color.CYAN.getGreen(), Color.CYAN.getBlue(), ALPHA);
-    private static final Color DEFAULT_SELECTED_SECONDARY_COLOR = new Color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), ALPHA);
-    private static final Color DEFAULT_UNSELECTED_PRIMARY_COLOR = new Color(Color.BLUE.getRed(), Color.BLUE.getGreen(), Color.BLUE.getBlue(), ALPHA);
-    private static final Color DEFAULT_UNSELECTED_SECONDARY_COLOR = new Color(Color.GRAY.getRed(), Color.GRAY.getGreen(), Color.GRAY.getBlue(), ALPHA);
-
-    private static final int DEFAULT_GAP_BETWEEN_BARS_IN_PIXELS = 2;
-
-    private Color primarySelectedColor = DEFAULT_SELECTED_PRIMARY_COLOR;
-    private Color primaryUnselectedColor = DEFAULT_UNSELECTED_PRIMARY_COLOR;
-    private Color secondarySelectedColor = DEFAULT_SELECTED_SECONDARY_COLOR;
-    private Color secondaryUnselectedColor = DEFAULT_UNSELECTED_SECONDARY_COLOR;
-    private int pixelGapBetweenBars = DEFAULT_GAP_BETWEEN_BARS_IN_PIXELS;
-
-    public HistogramRangeSelectorPanelController()
+    public HistogramRangeSelectorPanelController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
     {
-        super();
+        super(rangeConfiguration, selectionListener);
     }
 
     @Override
-    protected IRangeSelectorView createPanel()
+    protected ARangeSelectionPanel createPanel()
     {
         HistogramSelectionPanel panel = new HistogramSelectionPanel(this);
         final String primaryLabel = rangeConfiguration.getPrimaryLabel();
@@ -68,7 +55,7 @@ public class HistogramRangeSelectorPanelController extends ASwingRangeViewContro
     public int getMinimumViewWidth()
     {
         final int numBins = getNumBins();
-        return numBins + getPixelGapBetweenBars() * (numBins - 1);
+        return numBins + styleProvider.getPixelGapBetweenBars() * (numBins - 1);
     }
 
     /**
@@ -77,36 +64,6 @@ public class HistogramRangeSelectorPanelController extends ASwingRangeViewContro
     public List<Integer> getScaledPrimaryData()
     {
         return getScaledData(rangeConfiguration.getPrimaryData());
-    }
-
-    @Override
-    public Color getPrimarySelectedColor()
-    {
-        return primarySelectedColor;
-    }
-
-    @Override
-    public Color getPrimaryUnselectedColor()
-    {
-        return primaryUnselectedColor;
-    }
-
-    @Override
-    public Color getSecondarySelectedColor()
-    {
-        return secondarySelectedColor;
-    }
-
-    @Override
-    public Color getSecondaryUnselectedColor()
-    {
-        return secondaryUnselectedColor;
-    }
-
-    @Override
-    public int getPixelGapBetweenBars()
-    {
-        return pixelGapBetweenBars;
     }
 
     /**
@@ -118,38 +75,14 @@ public class HistogramRangeSelectorPanelController extends ASwingRangeViewContro
     }
 
     @Override
-    public void setPrimarySelectedColor(Color primarySelectedColor)
+    public void onViewConfigurationChanged()
     {
-        this.primarySelectedColor = primarySelectedColor;
-        ((HistogramSelectionPanel) panel).updateLegend();
-    }
+        super.onViewConfigurationChanged();
 
-    @Override
-    public void setPrimaryUnselectedColor(Color primaryUnselectedColor)
-    {
-        this.primaryUnselectedColor = primaryUnselectedColor;
-        ((HistogramSelectionPanel) panel).updateLegend();
-    }
-
-    @Override
-    public void setSecondarySelectedColor(Color secondarySelectedColor)
-    {
-        this.secondarySelectedColor = secondarySelectedColor;
-        ((HistogramSelectionPanel) panel).updateLegend();
-    }
-
-    @Override
-    public void setSecondaryUnselectedColor(Color secondaryUnselectedColor)
-    {
-        this.secondaryUnselectedColor = secondaryUnselectedColor;
-        ((HistogramSelectionPanel) panel).updateLegend();
-    }
-
-    @Override
-    public void setPixelGapBetweenBars(int numPixels)
-    {
-        pixelGapBetweenBars = numPixels;
-        panel.refreshView();
+        if (panel != null)
+        {
+            ((HistogramSelectionPanel) panel).updateLegend();
+        }
     }
 
     private List<Integer> getScaledData(List<Integer> dataSet)

@@ -10,7 +10,6 @@ import java.util.UUID;
  * The interface to which all range view/panel controllers must adhere. A view controller will control ONE
  * and only ONE {@link IRangeSelectorView}.
  *
- * @author Proprietary information subject to the terms of a Non-Disclosure Agreement
  * @since 0.0.1
  */
 public interface IRangeViewController
@@ -69,29 +68,23 @@ public interface IRangeViewController
     void selectAll();
 
     /**
-     * @return the minimum possible selectable index
+     * Adds a range selection listener to be notified of changes to the state of the selected region of the view.
+     *
+     * @param listener the listener to be notified of range selection changes
      */
-    int getSelectableRangeMinimum();
+    void addRangeSelectionListener(IRangeSelectionListener listener);
 
     /**
-     * @return the maximum possible selectable index
+     * Removes a range selection listener to be notified of changes to the state of the selected region of the view.
+     *
+     * @param listener the listener to be removed from teh list of those to whom notification is sent when range selection changes
      */
-    int getSelectableRangeMaximum();
+    void removeRangeSelectionListener(IRangeSelectionListener listener);
 
     /**
      * Handle a resize event, generally triggered by a component/size listener on the parent view container
      */
-    void onViewResized();
-
-//    /**
-//     * This provides a view controller the mechanism for "snapping" a parent view to a given size so that its
-//     * view is more appropriately sized. This basically says that the reference width is the proposed width and
-//     * the view controller returns the adjusted width that it would like to use instead.
-//     *
-//     * @param referenceWidth the width of the view that is "proposed" (i.e expected to be used)
-//     * @return the total width required to show the primary/secondary data
-//     */
-//    int getAdjustedViewWidth(int referenceWidth);
+    void onViewSizeChanged();
 
     /**
      * @return the absolute minimum width that can be supported by the view

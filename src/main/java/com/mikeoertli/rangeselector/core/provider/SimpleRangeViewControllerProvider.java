@@ -1,7 +1,7 @@
 package com.mikeoertli.rangeselector.core.provider;
 
+import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
 import com.mikeoertli.rangeselector.api.IRangeType;
-import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
@@ -19,7 +19,7 @@ public class SimpleRangeViewControllerProvider implements IRangeViewControllerPr
 {
 
     @Override
-    public SimpleRangeSelectorPanelController createViewController(GuiFrameworkType guiFramework, RangeConfiguration rangeConfiguration)
+    public SimpleRangeSelectorPanelController createSwingViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
     {
         SimpleRangeSelectorPanelController controller = new SimpleRangeSelectorPanelController();
         if (rangeConfiguration != null)

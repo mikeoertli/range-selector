@@ -1,19 +1,12 @@
 package com.mikeoertli.rangeselector;
 
-import com.mikeoertli.rangeselector.app.ThirdPartyApp;
-import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramRangeSelectorPanelController;
-import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectorPanelController;
+import com.mikeoertli.rangeselector.demo.ThirdPartyApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
-
-import javax.swing.JDialog;
-import javax.swing.WindowConstants;
-import java.util.Arrays;
-import java.util.List;
 
 @SpringBootApplication
 public class RangeSelectorApplication

@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector.ui.swing.simple;
 
-import com.mikeoertli.rangeselector.api.IRangeSelectorView;
+import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
 import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
 
 /**
@@ -16,7 +16,7 @@ public class SimpleRangeSelectorPanelController extends ASwingRangeViewControlle
     }
 
     @Override
-    protected IRangeSelectorView createPanel()
+    protected ARangeSelectionPanel createPanel()
     {
         return new SimpleRangeSelectionPanel(this);
     }
@@ -24,6 +24,6 @@ public class SimpleRangeSelectorPanelController extends ASwingRangeViewControlle
     @Override
     public int getMinimumViewWidth()
     {
-        return 10;
+        return 100;
     }
 }

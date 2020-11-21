@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector.ui.swing.listener;
 
-import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
+import com.mikeoertli.rangeselector.ui.common.IMouseInputHandler;
 import com.mikeoertli.rangeselector.api.IRangeViewController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import java.lang.invoke.MethodHandles;
  *
  * @since 0.0.1
  */
-public class RangeSelectionMouseListener extends MouseAdapter implements IRangeSelectionListener
+public class RangeSelectionMouseHandler extends MouseAdapter implements IMouseInputHandler
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -31,7 +31,7 @@ public class RangeSelectionMouseListener extends MouseAdapter implements IRangeS
 
     private final IRangeViewController controller;
 
-    public RangeSelectionMouseListener(IRangeViewController controller)
+    public RangeSelectionMouseHandler(IRangeViewController controller)
     {
         this.controller = controller;
     }

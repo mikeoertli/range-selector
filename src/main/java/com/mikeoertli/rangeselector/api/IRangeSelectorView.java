@@ -1,5 +1,7 @@
 package com.mikeoertli.rangeselector.api;
 
+import com.mikeoertli.rangeselector.ui.common.IMouseInputHandler;
+
 /**
  * Interface to which all range selector panels must adhere.
  *
@@ -34,20 +36,20 @@ public interface IRangeSelectorView
     void unlockPanel();
 
     /**
-     * Adds a range selection listener. This will almost certainly have to be cast to the appropriate type for the
+     * Adds a range selection handler. This will almost certainly have to be cast to the appropriate type for the
      * GUI framework being used, for example a {@link java.awt.event.MouseListener} for Swing
      *
-     * @param listener the listener to be added
+     * @param handler the handler to be added
      */
-    void addRangeSelectionListener(IRangeSelectionListener listener);
+    void addMouseInputHandler(IMouseInputHandler handler);
 
     /**
-     * Removes a range selection listener. This will almost certainly have to be cast to the appropriate type for the
+     * Removes a range selection handler. This will almost certainly have to be cast to the appropriate type for the
      * GUI framework being used, for example a {@link java.awt.event.MouseListener} for Swing
      *
-     * @param listener the listener to be removed
+     * @param handler the handler to be removed
      */
-    void removeRangeSelectionListener(IRangeSelectionListener listener);
+    void removeMouseInputHandler(IMouseInputHandler handler);
 
     /**
      * Refresh, redraw, repaint - do what is needed to do to ensure the most recent selected range is accurately drawn.

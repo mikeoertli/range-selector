@@ -3,6 +3,8 @@ package com.mikeoertli.rangeselector.api;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 
+import javax.naming.OperationNotSupportedException;
+
 /**
  * Common interface for all frequency range selector controllers
  *
@@ -13,11 +15,24 @@ public interface IRangeViewControllerProvider<CONTROL extends IRangeViewControll
     /**
      * Creates a range selection view controller which owns and manages a panel/view of the given GUI framework type.
      *
-     * @param guiFramework       the GUI framework to use for the view
      * @param rangeConfiguration the state/configuration of the range view
+     * @param selectionListener  the listener to be notified when a range is selected or removed
      * @return the panel controller for this range type and GUI framework, if supported
      */
-    CONTROL createViewController(GuiFrameworkType guiFramework, RangeConfiguration rangeConfiguration);
+    CONTROL createSwingViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener);
+
+    /**
+     * Creates a range selection view controller which owns and manages a panel/view of the given GUI framework type.
+     *
+     * @param rangeConfiguration the state/configuration of the range view
+     * @param selectionListener  the listener to be notified when a range is selected or removed
+     * @return the panel controller for this range type and GUI framework, if supported
+     * @throws OperationNotSupportedException if the controller doesn't support JavaFX (which none do, as of now)
+     */
+    default CONTROL createJavaFxViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener) throws OperationNotSupportedException
+    {
+        throw new OperationNotSupportedException("JavaFX is not supported");
+    }
 
     /**
      * Query to indicate whether a particular type of ranges and type of GUI framework is supported by

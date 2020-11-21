@@ -1,7 +1,5 @@
 package com.mikeoertli.rangeselector.ui.swing.simple;
 
-import java.awt.*;
-import javax.swing.*;
 import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +19,14 @@ import java.lang.invoke.MethodHandles;
 public class SimpleRangeSelectionPanel extends ARangeSelectionPanel
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final double MIN_WIDTH = 100;
+    private static final double MIN_HEIGHT = 50;
 
     public SimpleRangeSelectionPanel(SimpleRangeSelectorPanelController controller)
     {
         super(controller);
 
+        setPreferredSize(new Dimension(400, 100));
         initComponents();
     }
 
@@ -63,6 +64,24 @@ public class SimpleRangeSelectionPanel extends ARangeSelectionPanel
         logger.trace("Resetting {}", getClass().getSimpleName());
     }
 
+    @Override
+    public Dimension getPreferredSize()
+    {
+        // For some reason (due to null layout?) the preferred size is returning 0, 0 despite being set to a nonzero value
+        // This is a work around to address that.
+        final Dimension preferredSize = super.getPreferredSize();
+        if (preferredSize.getWidth() < MIN_WIDTH)
+        {
+            preferredSize.setSize(MIN_WIDTH, preferredSize.getHeight());
+        }
+
+        if (preferredSize.getHeight() < MIN_HEIGHT)
+        {
+            preferredSize.setSize(preferredSize.getWidth(), MIN_HEIGHT);
+        }
+        return preferredSize;
+    }
+
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -76,7 +95,8 @@ public class SimpleRangeSelectionPanel extends ARangeSelectionPanel
         {
             // compute preferred size
             Dimension preferredSize = new Dimension();
-            for(int i = 0; i < getComponentCount(); i++) {
+            for (int i = 0; i < getComponentCount(); i++)
+            {
                 Rectangle bounds = getComponent(i).getBounds();
                 preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
                 preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);

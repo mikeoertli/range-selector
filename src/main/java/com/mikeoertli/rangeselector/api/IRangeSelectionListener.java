@@ -1,49 +1,24 @@
 package com.mikeoertli.rangeselector.api;
 
 /**
- * Common interface for the mouse and mouse motion listeners that listen for input from the user performing a selection.
+ * Interface for a class to implement if it wants to be notified of the range selection (and de-selection) events.
  *
  * @since 0.0.2
  */
 public interface IRangeSelectionListener
 {
     /**
-     * @return a boolean to indicate whether there is an open/in-progress/active selection
-     */
-    boolean isArmed();
-
-    /**
-     * @return a boolean to indicate that there is a selected range
-     */
-    boolean hasRange();
-
-    /**
-     * @return the minimum of the selected range or -1 if there is no selected range
-     */
-    int getSelectedRangeMinimum();
-
-    /**
-     * @return the maximum of the selected range or -1 if there is no selected range or a range selection has started,
-     * but has not completed (and therefore has no end).
-     */
-    int getSelectedRangeMaximum();
-
-    /**
-     * @return the size of the selected range or 0 if there is no selected range
-     */
-    int getSelectedRangeSize();
-
-    /**
-     * Sets the selected range programmatically.
+     * A new range has been selected.
      *
-     * @param selectionMin the minimum index of the selected range
-     * @param selectionMax the maximum index of the eslected range
+     * @param rangeMin     the minimum end of the selectable range, usually 0
+     * @param rangeMax     the maximum of the selectable range
+     * @param selectionMin the minimum index of the selected range, will be greater than or equal to {@code rangeMin}
+     * @param selectionMax the maximum index of the selected range, will be less than or equal to {@code rangeMax}
      */
-    void setSelectedRange(int selectionMin, int selectionMax);
+    void onRangeSelected(int rangeMin, int rangeMax, int selectionMin, int selectionMax);
 
     /**
-     * Cancel and clear any range selection, whether in-progress or complete. If there is no range selection, no
-     * action is taken.
+     * The range selection has been cleared, no range is selected
      */
-    void reset();
+    void onRangeSelectionCleared();
 }
