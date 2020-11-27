@@ -24,6 +24,6 @@ public class SimpleRangeSelectorPanelController extends ASwingRangeViewControlle
     @Override
     public int getMinimumViewWidth()
     {
-        return 100;
+        return 200;
     }
 }

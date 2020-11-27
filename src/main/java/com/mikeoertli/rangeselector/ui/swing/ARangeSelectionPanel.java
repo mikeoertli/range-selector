@@ -45,7 +45,9 @@ public abstract class ARangeSelectionPanel extends JPanel implements IRangeSelec
         final int controllerMinWidth = controller.getMinimumViewWidth();
         if (controllerMinWidth != (int) minimumSize.getWidth())
         {
-            minimumSize.setSize(controllerMinWidth, minimumSize.getHeight());
+            final Dimension newMinDimension = new Dimension(controllerMinWidth, (int) minimumSize.getHeight());
+            logger.trace("Setting minimum size from {}x{} to {}x{}", minimumSize.getHeight(), minimumSize.getWidth(), newMinDimension.getHeight(), newMinDimension.getWidth());
+            minimumSize.setSize(newMinDimension);
             setMinimumSize(minimumSize);
         }
     }
@@ -55,12 +57,12 @@ public abstract class ARangeSelectionPanel extends JPanel implements IRangeSelec
     {
         super.paintComponent(graphics);
 
-        final RangeConfiguration rangeState = controller.getRangeConfiguration();
+        final RangeConfiguration rangeConfiguration = controller.getRangeConfiguration();
 
-        if (rangeState.hasSelection())
+        if (rangeConfiguration.hasSelection())
         {
-            final int startOfSelectedRange = rangeState.getSelectionMin();
-            final int endOfSelectedRange = rangeState.getSelectionMax();
+            final int startOfSelectedRange = rangeConfiguration.getSelectionMin();
+            final int endOfSelectedRange = rangeConfiguration.getSelectionMax();
 
             paintRegionBeforeSelection(graphics, startOfSelectedRange);
 

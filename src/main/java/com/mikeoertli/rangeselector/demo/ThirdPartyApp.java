@@ -11,6 +11,7 @@ import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.data.rangetype.FrequencyUnits;
 import com.mikeoertli.rangeselector.data.rangetype.SimpleCount;
 import com.mikeoertli.rangeselector.demo.ui.DemoSelectionDialog;
+import com.mikeoertli.rangeselector.demo.ui.DemoWindowListener;
 import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
 import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramRangeSelectorPanelController;
 import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectorPanelController;
@@ -26,7 +27,9 @@ import javax.swing.WindowConstants;
 import java.awt.Image;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
+import java.awt.event.WindowListener;
 import java.lang.invoke.MethodHandles;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -103,23 +106,22 @@ public class ThirdPartyApp
         demoSelectionDialog.setVisible(true);
     }
 
-    public void showSimpleDemo()
+    public void showSimpleDemo(DemoWindowListener windowListener)
     {
-
-        showDialog(simpleController, "Simple Demo");
+        showDialog(simpleController, windowListener, "Simple Demo");
     }
 
-    public void showSmallHistogramDemo()
+    public void showSmallHistogramDemo(DemoWindowListener windowListener)
     {
-        showDialog(smallSimController, "Demo Histogram (SMALL)");
+        showDialog(smallSimController, windowListener, "Demo Histogram (SMALL)");
     }
 
-    public void showLargeHistogramDemo()
+    public void showLargeHistogramDemo(DemoWindowListener windowListener)
     {
-        showDialog(controller, "Demo Histogram");
+        showDialog(controller, windowListener, "Demo Histogram");
     }
 
-    protected void showDialog(ASwingRangeViewController controller, String panelTitle)
+    protected void showDialog(ASwingRangeViewController controller, DemoWindowListener windowListener, String panelTitle)
     {
         SwingUtilities.invokeLater(() -> {
             if (controller != null)
@@ -127,21 +129,22 @@ public class ThirdPartyApp
                 final IRangeSelectorView view = controller.getView();
                 final JDialog dialog = new JDialog();
                 dialog.setTitle(panelTitle);
-                final Image image = Toolkit.getDefaultToolkit().getImage(ThirdPartyApp.class.getClassLoader().getResource(Constants.RANGE_SELECTOR_ICON_32X32_PATH));
+                final URL iconResourceUrl = ThirdPartyApp.class.getClassLoader().getResource(Constants.RANGE_SELECTOR_ICON_32X32_PATH);
+                final Image image = Toolkit.getDefaultToolkit().getImage(iconResourceUrl);
                 dialog.setIconImage(image);
                 final Taskbar taskbar = Taskbar.getTaskbar();
                 taskbar.setIconImage(image);
+                windowListener.addObservedWindow(dialog);
 
                 final JPanel panel = (JPanel) view;
                 dialog.setSize(panel.getPreferredSize());
                 dialog.getContentPane().add(panel);
                 dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                dialog.setModal(true);
                 dialog.pack();
                 dialog.setVisible(true);
             } else
             {
-                logger.error("Invalid configuration, could not create range selection view for " + panelTitle);
+                logger.error("Invalid configuration, could not create range selection view for {}", panelTitle);
             }
         });
     }

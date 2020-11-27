@@ -114,7 +114,7 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         {
             panel = createPanel();
             panel.addMouseInputHandler(mouseInputHandler);
-            ((JPanel) panel).addComponentListener(sizeChangeListener);
+            panel.addComponentListener(sizeChangeListener);
         }
         return panel;
     }
