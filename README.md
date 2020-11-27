@@ -2,16 +2,24 @@
 
 # Range Selector
 This is a utility for generating a GUI and related controllers/providers to obtain a selectable range. The initial target
-is for selecting a frequency range in a simple and intuitive way.
+is for selecting a frequency range in a simple and intuitive way. Currently, this is specifically for selecting a 2D
+range along the X-axis.
 
 Initially, this will focus on providing a Swing based GUI for selecting a range of values, but the goal is to 
 offer both Swing and JavaFX-based solutions eventually.
+
+## Examples
 
 This is the ultra-simple proof-of-concept view:
 ![Simple Range Selection](doc/simple-range-selection-panel.gif)
 
 Here is a basic histogram-based range selection view:
 ![Basic Histogram](doc/basic-histogram-with-legend.gif)
+
+### Demo App
+The demo application is what runs when you execute the Spring application (`./gradlew bootRun`)
+![Range Selector Demo App Launcher](doc/range-selector-demo-app-launcher.png)
+
 
 ## Requirements
 This project requires:
