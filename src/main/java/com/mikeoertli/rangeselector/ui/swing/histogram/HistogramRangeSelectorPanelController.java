@@ -1,7 +1,6 @@
 package com.mikeoertli.rangeselector.ui.swing.histogram;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
-import com.mikeoertli.rangeselector.api.IRangeSelectorView;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
 import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
@@ -54,8 +53,7 @@ public class HistogramRangeSelectorPanelController extends ASwingRangeViewContro
     @Override
     public int getMinimumViewWidth()
     {
-        final int numBins = getNumBins();
-        return numBins + styleProvider.getPixelGapBetweenBars() * (numBins - 1);
+        return getNumBins(); // min is 1px per bin, so just return that here
     }
 
     /**
@@ -87,7 +85,7 @@ public class HistogramRangeSelectorPanelController extends ASwingRangeViewContro
 
     private List<Integer> getScaledData(List<Integer> dataSet)
     {
-        final int maxValue = rangeConfiguration.getDataAbsoluteMax();
+        final int maxValue = rangeConfiguration.getLargestValueFromDataSets();
 
         // Normalize to 100.0
         return dataSet.stream()

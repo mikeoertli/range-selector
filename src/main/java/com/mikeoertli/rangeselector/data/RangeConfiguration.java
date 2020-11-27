@@ -54,6 +54,8 @@ public class RangeConfiguration
         setSelectionMin(toClone.getSelectionMin());
         setSelectionMax(toClone.getSelectionMax());
         setLocked(toClone.isLocked());
+        setPrimaryData(toClone.getPrimaryData());
+        setSecondaryData(toClone.getSecondaryData());
         lastUpdateTime = toClone.getLastUpdateTime();
     }
 
@@ -168,43 +170,68 @@ public class RangeConfiguration
         }
     }
 
+    /**
+     * @return the absolute minimum index of the range that could be selected (always 0)
+     */
     public int getRangeMin()
     {
         return rangeMin;
     }
 
+    /**
+     * @return the absolute maximum possible index of the range that could be selected
+     */
     public int getRangeMax()
     {
         return rangeMax;
     }
 
-    public void setRangeMin(int rangeMin)
-    {
-        this.rangeMin = rangeMin;
-        onStateUpdated();
-    }
-
+    /**
+     * Set the upper limit (maximum) of the selectable range
+     * <p>
+     * Note the omission of setting the range minimum is intentional as it is always zero.
+     *
+     * @param rangeMax the upper limit (maximum) of the selectable range
+     */
     public void setRangeMax(int rangeMax)
     {
         this.rangeMax = rangeMax;
         onStateUpdated();
     }
 
+    /**
+     * @return the minimum point of selection or -1 if there is none, while selection is active, this is just the min
+     * of the selected (but still changing) region. If the selection is right -> left, this will be the end of the
+     * selected range since that will be the minimum of the selected range values.
+     */
     public int getSelectionMin()
     {
         return selectionMin;
     }
 
+    /**
+     * @return the maximum point of selection or -1 if there is none, while selection is active, this is just the max
+     * of the selected (but still changing) region. If the selection is right -> left, this will be the start of the
+     * selected range since that will be the maximum of the selected range values.
+     */
     public int getSelectionMax()
     {
         return selectionMax;
     }
 
+    /**
+     * @return a boolean to indicate whether or not the range configuration is locked
+     */
     public boolean isLocked()
     {
         return locked;
     }
 
+    /**
+     * Sets the locked state of the range configuration
+     *
+     * @param locked a boolean to indicate whether or not the range configuration is locked
+     */
     public void setLocked(boolean locked)
     {
         if (this.locked != locked)
@@ -214,31 +241,56 @@ public class RangeConfiguration
         }
     }
 
+    /**
+     * @return the instant at which this configuration was last updated
+     */
     public Instant getLastUpdateTime()
     {
         return lastUpdateTime;
     }
 
+    /**
+     * Clear the selected range, ex: called on double click
+     */
     public void clearSelection()
     {
         setSelectionMin(NO_SELECTION);
         setSelectionMax(NO_SELECTION);
     }
 
+    /**
+     * Capture the last time this configuration was updated
+     */
     private void onStateUpdated()
     {
         lastUpdateTime = Instant.now();
     }
 
-    public int getDataAbsoluteMax()
+    /**
+     * Retrieves the largest value from either data set, this is used to normalize data in the Y direction
+     * when necessary.
+     *
+     * @return the largest value in either the primary or secondary data set, if applicable, otherwise 0
+     */
+    public int getLargestValueFromDataSets()
     {
         final int maxPrimaryDataPoint = primaryData.stream().mapToInt(i -> i).max().orElse(0);
         final int maxSecondaryDataPoint = secondaryData.stream().mapToInt(i -> i).max().orElse(0);
         return Math.max(maxPrimaryDataPoint, maxSecondaryDataPoint);
     }
 
+    /**
+     * @return the size of the data sets, otherwise 0
+     */
     public int getDataSize()
     {
-        return primaryData.size();
+        final int primaryDataSetSize = primaryData.size();
+        final int secondaryDataSetSize = secondaryData.size();
+        if (primaryDataSetSize != secondaryDataSetSize && secondaryDataSetSize != 0)
+        {
+            logger.warn("The primary data set contains {} data, but the secondary has {}, these should match or else " +
+                    "the secondary should be empty.", primaryDataSetSize, secondaryDataSetSize);
+        }
+        return primaryDataSetSize;
     }
 }
