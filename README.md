@@ -9,11 +9,13 @@ Initially, this will focus on providing a Swing based GUI for selecting a range 
 offer both Swing and JavaFX-based solutions eventually.
 
 ## Examples
+One common feature is the ability to lock the range selection; this will preserve the current state until unlocked whether
+that state includes a selected range or not.
 
 This is the ultra-simple proof-of-concept view:
 ![Simple Range Selection](doc/simple-range-selection-panel.gif)
 
-Here is a basic histogram-based range selection view:
+Here is a basic histogram-based range selection view with an icon (that doubles as a button) showing the lock state:
 ![Basic Histogram](doc/basic-histogram-with-legend.gif)
 
 ### Demo App
@@ -49,9 +51,7 @@ To run the basic sample from the command line, execute:
 
 ### As a Library in Your Project
 
-This is intended to be pulled into another project as a library, as such, it is designed to be very portable.
-
-TODO
+This is intended to be pulled into another project as a library.
 
 Add the dependency:
 ```groovy
@@ -61,9 +61,14 @@ implementation 'com.mikeoertli:range-selector'
 Inject the `RangeSelectorProvider` and request a `RangeSelectorController`:
 ```java
 public class MyApplication {
+    
+    private final RangeSelectorProvider rangeSelectorProvider;
 
     @Inject
-    private RangeSelectorProvider rangeSelectorProvider;
+    public MyApplication(RangeSelectorProvider rangeSelectorProvider)
+    {
+        this.rangeSelectorProvider = rangeSelectorProvider;
+    }
     
     public void doStuff()
     {

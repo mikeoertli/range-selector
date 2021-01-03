@@ -16,11 +16,6 @@ public interface IRangeSelectorView
     void reset();
 
     /**
-     * @return a boolean that indicates whether the panel is locked (i.e. unable to accept input/change) or not
-     */
-    boolean isLocked();
-
-    /**
      * Locks the panel to prevent any changes, whether via the UI or programmatic EXCEPT via the {@link #reset()}
      * method, which will reset even a locked panel.
      * <p>
@@ -37,11 +32,14 @@ public interface IRangeSelectorView
 
     /**
      * Adds a range selection handler. This will almost certainly have to be cast to the appropriate type for the
-     * GUI framework being used, for example a {@link java.awt.event.MouseListener} for Swing
+     * GUI framework being used, for example a {@link java.awt.event.MouseListener} *and*
+     * {@link java.awt.event.MouseMotionListener} for Swing
      *
      * @param handler the handler to be added
+     * @throws IllegalArgumentException if the given mouse input handler doesn't meet the requirements dictated by the
+     *                                  particular GUI framework
      */
-    void addMouseInputHandler(IMouseInputHandler handler);
+    void addMouseInputHandler(IMouseInputHandler handler) throws IllegalArgumentException;
 
     /**
      * Removes a range selection handler. This will almost certainly have to be cast to the appropriate type for the

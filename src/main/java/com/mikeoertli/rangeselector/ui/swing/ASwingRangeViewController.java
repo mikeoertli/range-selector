@@ -12,7 +12,6 @@ import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JPanel;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +150,7 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         {
             panel.reset();
             panel.removeMouseInputHandler(mouseInputHandler);
-            ((JPanel) panel).removeComponentListener(sizeChangeListener);
+            panel.removeComponentListener(sizeChangeListener);
         }
 
         rangeConfiguration.clearSelection();
@@ -216,6 +215,22 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         if (panel != null)
         {
             panel.refreshView();
+        }
+    }
+
+    @Override
+    public void toggleLock()
+    {
+        final boolean newLockedState = !rangeConfiguration.isLocked();
+        logger.trace("Toggling the locked state from {} to {}", newLockedState ? "unlocked" : "locked", newLockedState ? "locked" : "unlocked");
+        rangeConfiguration.setLocked(newLockedState);
+        mouseInputHandler.setLocked(newLockedState);
+        if (newLockedState)
+        {
+            panel.lockPanel();
+        } else
+        {
+            panel.unlockPanel();
         }
     }
 }

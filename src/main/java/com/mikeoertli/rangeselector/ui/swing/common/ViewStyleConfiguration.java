@@ -20,12 +20,19 @@ public class ViewStyleConfiguration implements IViewStyleProvider
     private static final Color DEFAULT_UNSELECTED_SECONDARY_COLOR = new Color(Color.GRAY.getRed(), Color.GRAY.getGreen(), Color.GRAY.getBlue(), ALPHA);
 
     private static final int DEFAULT_GAP_BETWEEN_BARS_IN_PIXELS = 2;
+    private static final boolean DEFAULT_DARK_MODE_ENABLED = false;
 
     private Color primarySelectedColor = DEFAULT_SELECTED_PRIMARY_COLOR;
     private Color primaryUnselectedColor = DEFAULT_UNSELECTED_PRIMARY_COLOR;
     private Color secondarySelectedColor = DEFAULT_SELECTED_SECONDARY_COLOR;
     private Color secondaryUnselectedColor = DEFAULT_UNSELECTED_SECONDARY_COLOR;
     private int pixelGapBetweenBars = DEFAULT_GAP_BETWEEN_BARS_IN_PIXELS;
+
+    /**
+     * Boolean to indicate that views owned by this controller are to use dark mode and dark mode assets
+     * Note: Very limited support at this time.
+     */
+    private boolean darkMode = DEFAULT_DARK_MODE_ENABLED;
 
     private final ISwingViewController controller;
 
@@ -67,38 +74,67 @@ public class ViewStyleConfiguration implements IViewStyleProvider
     @Override
     public void setPrimarySelectedColor(Color primarySelectedColor)
     {
-        this.primarySelectedColor = primarySelectedColor;
-        notifyViewController();
+        if (!this.primarySelectedColor.equals(primarySelectedColor))
+        {
+            this.primarySelectedColor = primarySelectedColor;
+            notifyViewController();
+        }
     }
-
-
 
     @Override
     public void setPrimaryUnselectedColor(Color primaryUnselectedColor)
     {
-        this.primaryUnselectedColor = primaryUnselectedColor;
-        notifyViewController();
+        if (!this.primaryUnselectedColor.equals(primaryUnselectedColor))
+        {
+            this.primaryUnselectedColor = primaryUnselectedColor;
+            notifyViewController();
+        }
     }
 
     @Override
     public void setSecondarySelectedColor(Color secondarySelectedColor)
     {
-        this.secondarySelectedColor = secondarySelectedColor;
-        notifyViewController();
+        if (!this.secondarySelectedColor.equals(secondarySelectedColor))
+        {
+            this.secondarySelectedColor = secondarySelectedColor;
+            notifyViewController();
+        }
     }
 
     @Override
     public void setSecondaryUnselectedColor(Color secondaryUnselectedColor)
     {
-        this.secondaryUnselectedColor = secondaryUnselectedColor;
-        notifyViewController();
+        if (!this.secondaryUnselectedColor.equals(secondaryUnselectedColor))
+        {
+            this.secondaryUnselectedColor = secondaryUnselectedColor;
+            notifyViewController();
+        }
     }
 
     @Override
     public void setPixelGapBetweenBars(int numPixels)
     {
-        pixelGapBetweenBars = numPixels;
-        notifyViewController();
+        if (pixelGapBetweenBars != numPixels)
+        {
+            pixelGapBetweenBars = numPixels;
+            notifyViewController();
+        }
+    }
+
+    @Override
+    public void setDarkModeEnabled(boolean enabled)
+    {
+        if (darkMode != enabled)
+        {
+            darkMode = enabled;
+            notifyViewController();
+        }
+    }
+
+    @Override
+    public boolean isDarkModeEnabled()
+    {
+        return darkMode;
     }
 
     @Override

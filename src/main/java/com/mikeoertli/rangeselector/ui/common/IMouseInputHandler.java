@@ -47,5 +47,12 @@ public interface IMouseInputHandler
      */
     void reset();
 
-
+    /**
+     * Enable or disable the selection lock. When enabled, the current selection state is locked and cannot be changed.
+     * If no selection is made, none can be made until unlocked. If a selection is made, it cannot be cleared, nor can
+     * another selection be made until it is unlocked.
+     *
+     * @param locked locks the current selection state if true
+     */
+    void setLocked(boolean locked);
 }

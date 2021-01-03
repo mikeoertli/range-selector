@@ -74,10 +74,26 @@ public interface IViewStyleProvider
      */
     void setSecondaryUnselectedColor(Color secondaryUnselectedColor);
 
+    /**
+     * Sets the pixel gap between bars of certain types of views (ex: histogram). If the view doesn't support this,
+     * calls to this method are ignored.
+     *
+     * @param numPixels the number of pixels between bars of the view, if applicable
+     */
     void setPixelGapBetweenBars(int numPixels);
 
     /**
      * Method that should be triggered any time the view configuration changes (ex: a setter above is called)
      */
     void notifyViewController();
+
+    /**
+     * @param enabled when true, this indicates the view should use dark mode
+     */
+    void setDarkModeEnabled(boolean enabled);
+
+    /**
+     * @return a boolean indicating dark mode is enabled
+     */
+    boolean isDarkModeEnabled();
 }

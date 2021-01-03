@@ -1,10 +1,12 @@
 package com.mikeoertli.rangeselector.ui.swing.listener;
 
-import com.mikeoertli.rangeselector.ui.common.IMouseInputHandler;
 import com.mikeoertli.rangeselector.api.IRangeViewController;
+import com.mikeoertli.rangeselector.ui.common.IMouseInputHandler;
+import com.mikeoertli.rangeselector.ui.swing.common.RightClickMenuManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.SwingUtilities;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.invoke.MethodHandles;
@@ -19,6 +21,7 @@ public class RangeSelectionMouseHandler extends MouseAdapter implements IMouseIn
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private boolean armed = false;
+    private boolean locked = false;
 
     private int startRange = -1;
 
@@ -30,41 +33,60 @@ public class RangeSelectionMouseHandler extends MouseAdapter implements IMouseIn
     private int captureCount = 0;
 
     private final IRangeViewController controller;
+    private final RightClickMenuManager rightClickMenuManager;
 
     public RangeSelectionMouseHandler(IRangeViewController controller)
     {
         this.controller = controller;
+        rightClickMenuManager = new RightClickMenuManager(controller);
     }
 
     @Override
-    public void mousePressed(MouseEvent e)
+    public void mousePressed(MouseEvent event)
     {
-        if (e.getClickCount() != 2)
+        if (event.getClickCount() != 2 && SwingUtilities.isLeftMouseButton(event))
         {
-            startRangeCapture(e.getX());
+            startRangeCapture(event.getX());
+        } else if (SwingUtilities.isRightMouseButton(event))
+        {
+            logger.trace("mousePressed - Processing right click");
+            rightClickMenuManager.processEventShowPopup(event);
         }
     }
 
     @Override
-    public void mouseReleased(MouseEvent e)
+    public void mouseReleased(MouseEvent event)
     {
-        if (armed)
+        if (armed && SwingUtilities.isLeftMouseButton(event))
         {
-            endRangeCapture(e.getX());
+            endRangeCapture(event.getX());
+        } else if (SwingUtilities.isRightMouseButton(event))
+        {
+            logger.trace("mouseReleased - Processing right click");
+            rightClickMenuManager.processEventShowPopup(event);
         }
     }
 
     @Override
-    public void mouseClicked(MouseEvent e)
+    public void mouseClicked(MouseEvent event)
     {
-        if (e.getClickCount() == 2)
+        if (!locked)
         {
-            logger.trace("Selecting complete range due to single click.");
-            controller.selectAll();
-        } else
-        {
-            logger.trace("Resetting selection due to single click.");
-            reset();
+            if (SwingUtilities.isLeftMouseButton(event))
+            {
+                if (event.getClickCount() == 2)
+                {
+                    logger.trace("Selecting complete range due to single click.");
+                    controller.selectAll();
+                } else
+                {
+                    logger.trace("Resetting selection due to single click.");
+                    reset();
+                }
+            } else
+            {
+                logger.trace("mouseClicked - Mouse click event for button {} is ignored.", event.getButton());
+            }
         }
     }
 
@@ -91,39 +113,55 @@ public class RangeSelectionMouseHandler extends MouseAdapter implements IMouseIn
 
     private void startRangeCapture(int xLocation)
     {
-        logger.trace("Start range capture #{}", captureCount);
-        reset();
+        if (!locked)
+        {
 
-        armed = true;
-        startRange = xLocation;
-        lastKnown = xLocation;
+            logger.trace("Start range capture #{}", captureCount);
+            reset();
 
-        captureCount++;
+            armed = true;
+            startRange = xLocation;
+            lastKnown = xLocation;
 
-        saveUpdatedRange();
+            captureCount++;
+
+            saveUpdatedRange();
+        }
     }
 
     private void endRangeCapture(int xLocation)
     {
-        armed = false;
-        endRange = xLocation;
-        lastKnown = xLocation;
+        if (!locked)
+        {
+            armed = false;
+            endRange = xLocation;
+            lastKnown = xLocation;
 
-        logger.trace("End of capture range (#{}). Start: {}, end: {}.", captureCount, startRange, endRange);
+            logger.trace("End of capture range (#{}). Start: {}, end: {}.", captureCount, startRange, endRange);
 
-        saveUpdatedRange();
+            saveUpdatedRange();
+        }
     }
 
     @Override
     public void reset()
     {
-        logger.trace("Resetting armed status and start/stop/lastKnown range. Was armed? {}", armed);
+        if (!locked)
+        {
+            logger.trace("Resetting armed status and start/stop/lastKnown range. Was armed? {}", armed);
 
-        armed = false;
-        startRange = -1;
-        endRange = -1;
-        lastKnown = -1;
-        saveUpdatedRange();
+            armed = false;
+            startRange = -1;
+            endRange = -1;
+            lastKnown = -1;
+            saveUpdatedRange();
+        }
+    }
+
+    @Override
+    public void setLocked(boolean locked)
+    {
+        this.locked = locked;
     }
 
     private void saveUpdatedRange()

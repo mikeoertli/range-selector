@@ -2,6 +2,7 @@ package com.mikeoertli.rangeselector.api;
 
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
+import com.mikeoertli.rangeselector.ui.swing.listener.ILockListener;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +13,7 @@ import java.util.UUID;
  *
  * @since 0.0.1
  */
-public interface IRangeViewController
+public interface IRangeViewController extends ILockListener
 {
 
     /**

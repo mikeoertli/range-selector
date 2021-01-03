@@ -19,12 +19,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -81,8 +76,6 @@ public class DemoSelectionDialog extends JDialog
             return keyHandled;
         });
     }
-
-
 
     private void cancelButtonActionPerformed()
     {
@@ -156,7 +149,7 @@ public class DemoSelectionDialog extends JDialog
 
                 //---- instructionsLabel ----
                 instructionsLabel.setText("Select which demo GUI(s) to run...");
-                instructionsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/range-selection-icon-32.png")));
+                instructionsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/logo/range-selection-icon-32.png")));
                 instructionsLabel.setName("instructionsLabel");
                 contentPanel.add(instructionsLabel, new GridBagConstraints(0, 0, 4, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,

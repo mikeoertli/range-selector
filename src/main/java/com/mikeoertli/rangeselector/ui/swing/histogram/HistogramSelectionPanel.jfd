@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "7.0.2.6.321" Java: "11.0.8" encoding: "UTF-8"
+JFDML JFormDesigner: "7.0.3.0.337" Java: "11.0.9" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -16,7 +16,7 @@ new FormModel {
 				"value": "Center"
 			} )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
-				"$columnSpecs": "0:1.0, 0, 70, 0:0.19999999999999998, 0, 93, 0:1.0"
+				"$columnSpecs": "0, 0, 0, 0, 0, 70, 0:0.19999999999999998, 0, 93, 0:1.0"
 				"$rowSpecs": "0, 0, 0"
 				"$hGap": 5
 				"$vGap": 5
@@ -24,31 +24,64 @@ new FormModel {
 				"$alignTop": true
 			} ) {
 				name: "legendPanel"
-				"border": new javax.swing.border.TitledBorder( null, "LEGEND", 2, 0, new java.awt.Font( ".SF NS Text", 1, 13 ), null )
+				"border": new javax.swing.border.TitledBorder( null, "LEGEND & STATUS", 2, 0, new java.awt.Font( ".SF NS Text", 1, 15 ), null )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "stateLabel"
+					"text": "STATE"
+					"font": &SwingDerivedFont0 new com.jformdesigner.model.SwingDerivedFont( null, 3, 0, false )
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+				add( new FormComponent( "javax.swing.JSeparator" ) {
+					name: "stateLegendVerticalSeparator"
+					"orientation": 1
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 2
+					"gridheight": 3
+					"hAlign": 0
+				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "primaryLabel"
 					"text": "PRIMARY"
+					"font": #SwingDerivedFont0
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 					"gridwidth": 2
 					"hAlign": 0
-					"gridx": 1
+					"gridx": 4
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "secondaryLabel"
 					"text": "SECONDARY"
+					"font": #SwingDerivedFont0
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-					"gridx": 4
+					"gridx": 7
 					"gridwidth": 2
 					"hAlign": 0
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "lockedIconLabel"
+					"icon": new com.jformdesigner.model.SwingIcon( 0, "/icon/lock/unlocked-32x32.png" )
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridy": 1
+				} )
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer3"
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 1
+					"gridy": 1
+				} )
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer2"
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 3
+					"gridy": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "primSelectedLabel"
 					"text": "Selected"
-					"font": &SwingDerivedFont0 new com.jformdesigner.model.SwingDerivedFont( null, 2, -1, false )
+					"font": &SwingDerivedFont1 new com.jformdesigner.model.SwingDerivedFont( null, 2, -1, false )
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 					"gridy": 1
 					"hAlign": 4
-					"gridx": 1
+					"gridx": 4
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 					name: "primarySelectedColorPanel"
@@ -56,21 +89,21 @@ new FormModel {
 						"JavaCodeGenerator.customCreate": true
 					}
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-					"gridx": 2
+					"gridx": 5
 					"gridy": 1
 				} )
 				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 					name: "hSpacer1"
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-					"gridx": 3
+					"gridx": 6
 					"gridy": 1
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "secSelectedLabel"
 					"text": "Selected"
-					"font": #SwingDerivedFont0
+					"font": #SwingDerivedFont1
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-					"gridx": 4
+					"gridx": 7
 					"gridy": 1
 					"hAlign": 4
 				} )
@@ -80,17 +113,17 @@ new FormModel {
 						"JavaCodeGenerator.customCreate": true
 					}
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-					"gridx": 5
+					"gridx": 8
 					"gridy": 1
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "primUnselectedLabel"
 					"text": "Unselected"
-					"font": #SwingDerivedFont0
+					"font": #SwingDerivedFont1
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 					"gridy": 2
 					"hAlign": 4
-					"gridx": 1
+					"gridx": 4
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 					name: "primaryUnselectedColorPanel"
@@ -98,15 +131,15 @@ new FormModel {
 						"JavaCodeGenerator.customCreate": true
 					}
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-					"gridx": 2
+					"gridx": 5
 					"gridy": 2
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "secUnselectedPanel"
 					"text": "Unselected"
-					"font": #SwingDerivedFont0
+					"font": #SwingDerivedFont1
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-					"gridx": 4
+					"gridx": 7
 					"gridy": 2
 					"hAlign": 4
 				} )
@@ -116,7 +149,7 @@ new FormModel {
 						"JavaCodeGenerator.customCreate": true
 					}
 				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-					"gridx": 5
+					"gridx": 8
 					"gridy": 2
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
@@ -124,7 +157,7 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 400, 300 )
+			"size": new java.awt.Dimension( 435, 300 )
 		} )
 	}
 }
