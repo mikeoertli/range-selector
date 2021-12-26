@@ -1,54 +1,42 @@
 plugins {
     id 'org.springframework.boot' version '2.5.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
-    id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.11-SNAPSHOT'
 }
 
-group = 'com.mikeoertli'
-version = '0.1.0-SNAPSHOT'
-sourceCompatibility = '17'
+// Took a lot of guidance from: https://reflectoring.io/spring-boot-gradle-multi-module/
+subprojects {
+    group = 'com.mikeoertli'
+    version = '0.1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'java'
+    apply plugin: 'application'
+    apply plugin: 'java-library'
+
+    sourceCompatibility = '17'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:2.5.6")
+        }
+    }
+
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-devtools")
+
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }
 
-javafx {
-    version = "17.0.1"
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
-    mainClassName = 'com.mikeoertli.rangeselector.demo.javafx.ThirdPartyFxApp'
-}
-
-dependencies {
-    implementation("org.springframework.boot:spring-boot-devtools")
-
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-test {
-    useJUnitPlatform()
-}
-
-//compileJava {
-//    doFirst {
-//        options.compilerArgs = [
-//                '--module-path', classpath.asPath,
-//                '--add-modules', 'javafx.controls,javafx.fxml'
-//        ]
-//    }
-//}
-
-//mainClassName = 'com.mikeoertli.rangeselector.demo.javafx.ThirdPartyFxApp'
-
-//run {
-//    doFirst {
-//        jvmArgs = [
-//                '--module-path', classpath.asPath,
-//                '--add-modules', 'javafx.controls,javafx.fxml'
-//        ]
-//    }
-//}
