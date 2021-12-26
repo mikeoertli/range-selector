@@ -2,7 +2,7 @@ package com.mikeoertli.rangeselector.api;
 
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.listener.ILockListener;
+import com.mikeoertli.rangeselector.ui.common.ILockListener;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -30,7 +30,7 @@ public interface IRangeViewController extends ILockListener
      *
      * @return the view that is owned/managed by this controller
      */
-    IRangeSelectorView getView();
+    IRangeSelectorView<?> getView();
 
     /**
      * @return The current range state of the view/panel
@@ -64,11 +64,6 @@ public interface IRangeViewController extends ILockListener
     void onRangeSelectionChanged(int selectionMin, int selectionMax);
 
     /**
-     * Select the full range
-     */
-    void selectAll();
-
-    /**
      * Adds a range selection listener to be notified of changes to the state of the selected region of the view.
      *
      * @param listener the listener to be notified of range selection changes
@@ -91,4 +86,15 @@ public interface IRangeViewController extends ILockListener
      * @return the absolute minimum width that can be supported by the view
      */
     int getMinimumViewWidth();
+
+
+    /**
+     * @return the provider for information regarding how to style the view
+     */
+    IViewStyleProvider getViewStyleProvider();
+
+    /**
+     * Trigger the view controller to refresh the view
+     */
+    void onViewConfigurationChanged();
 }

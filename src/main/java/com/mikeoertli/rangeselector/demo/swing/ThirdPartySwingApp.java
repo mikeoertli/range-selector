@@ -1,20 +1,18 @@
-package com.mikeoertli.rangeselector.demo;
+package com.mikeoertli.rangeselector.demo.swing;
 
 import com.mikeoertli.rangeselector.Constants;
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
 import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.api.IRangeViewProviderRegistry;
-import com.mikeoertli.rangeselector.core.provider.FrequencyRangeViewControllerProvider;
+import com.mikeoertli.rangeselector.core.provider.SwingHistogramViewControllerProvider;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.data.rangetype.FrequencyUnits;
 import com.mikeoertli.rangeselector.data.rangetype.SimpleCount;
-import com.mikeoertli.rangeselector.demo.ui.DemoSelectionDialog;
-import com.mikeoertli.rangeselector.demo.ui.DemoWindowListener;
 import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
 import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramRangeSelectorPanelController;
-import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectorPanelController;
+import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectionPanelController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,6 @@ import javax.swing.WindowConstants;
 import java.awt.Image;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
-import java.awt.event.WindowListener;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,16 +38,16 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 0.0.2
  */
 @Component
-public class ThirdPartyApp
+public class ThirdPartySwingApp
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private HistogramRangeSelectorPanelController controller;
     private HistogramRangeSelectorPanelController smallSimController;
-    private SimpleRangeSelectorPanelController simpleController;
+    private SimpleRangeSelectionPanelController simpleController;
 
     @Autowired
-    public ThirdPartyApp(IRangeViewProviderRegistry registry)
+    public ThirdPartySwingApp(IRangeViewProviderRegistry registry)
     {
         final Optional<IRangeViewControllerProvider<? extends IRangeViewController>> frequencyRangeSelectionProvider =
                 registry.getRangeViewControlProvider(FrequencyUnits.MHZ, GuiFrameworkType.SWING);
@@ -58,23 +55,23 @@ public class ThirdPartyApp
         // The range min/max needs to be the number of bars when dealing with a histogram
         final int numBars = 150;
         frequencyRangeSelectionProvider.ifPresent(provider -> {
-            if (provider instanceof FrequencyRangeViewControllerProvider)
+            if (provider instanceof SwingHistogramViewControllerProvider)
             {
-                List<Integer> primaryData = buildRandomDataSet(numBars, 0, 20);
-                List<Integer> secondaryData = buildRandomDataSet(numBars, 0, 5);
+                List<Integer> primaryData = buildRandomDataSet(numBars, 20);
+                List<Integer> secondaryData = buildRandomDataSet(numBars, 5);
                 RangeConfiguration rangeConfiguration = new RangeConfiguration(0, numBars,
                         "Frequency (MHz)", "Frequency", primaryData, secondaryData,
                         "# Targets", "# Detections");
 
-                controller = ((FrequencyRangeViewControllerProvider) provider).createSwingViewController(rangeConfiguration, null);
+                controller = ((SwingHistogramViewControllerProvider) provider).createViewController(rangeConfiguration, null);
 
-                List<Integer> smallPrimary = buildRandomDataSet(5, 0, 20);
-                List<Integer> smallSecondary = buildRandomDataSet(5, 0, 5);
+                List<Integer> smallPrimary = buildRandomDataSet(5, 20);
+                List<Integer> smallSecondary = buildRandomDataSet(5, 5);
                 RangeConfiguration smallRangeConfig = new RangeConfiguration(0, numBars,
                         "Frequency (MHz)", "Frequency", smallPrimary, smallSecondary,
                         "# Targets", "# Detections");
 
-                smallSimController = ((FrequencyRangeViewControllerProvider) provider).createSwingViewController(smallRangeConfig, null);
+                smallSimController = ((SwingHistogramViewControllerProvider) provider).createViewController(smallRangeConfig, null);
             }
         });
 
@@ -83,17 +80,17 @@ public class ThirdPartyApp
 
         simpleProvider.ifPresent(provider -> {
             RangeConfiguration config = new RangeConfiguration();
-            simpleController = (SimpleRangeSelectorPanelController) provider.createSwingViewController(config, null);
+            simpleController = (SimpleRangeSelectionPanelController) provider.createViewController(config, null);
         });
     }
 
-    private List<Integer> buildRandomDataSet(int numDataPoints, int minValue, int maxValue)
+    private List<Integer> buildRandomDataSet(int numDataPoints, int maxValue)
     {
         List<Integer> dataSet = new ArrayList<>();
 
         for (int i = 0; i < numDataPoints; i++)
         {
-            dataSet.add(ThreadLocalRandom.current().nextInt(minValue, maxValue));
+            dataSet.add(ThreadLocalRandom.current().nextInt(0, maxValue));
         }
 
         return dataSet;
@@ -126,10 +123,10 @@ public class ThirdPartyApp
         SwingUtilities.invokeLater(() -> {
             if (controller != null)
             {
-                final IRangeSelectorView view = controller.getView();
+                final IRangeSelectorView<?> view = controller.getView();
                 final JDialog dialog = new JDialog();
                 dialog.setTitle(panelTitle);
-                final URL iconResourceUrl = ThirdPartyApp.class.getClassLoader().getResource(Constants.RANGE_SELECTOR_ICON_32X32_PATH);
+                final URL iconResourceUrl = ThirdPartySwingApp.class.getClassLoader().getResource(Constants.RANGE_SELECTOR_ICON_32X32_PATH);
                 final Image image = Toolkit.getDefaultToolkit().getImage(iconResourceUrl);
                 dialog.setIconImage(image);
                 final Taskbar taskbar = Taskbar.getTaskbar();

@@ -1,4 +1,4 @@
-package com.mikeoertli.rangeselector.demo.ui;
+package com.mikeoertli.rangeselector.demo.swing;
 
 import java.awt.Window;
 import java.awt.event.WindowAdapter;

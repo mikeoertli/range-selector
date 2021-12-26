@@ -2,13 +2,10 @@ package com.mikeoertli.rangeselector.ui.swing.histogram;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
+import com.mikeoertli.rangeselector.ui.swing.ASwingRangeSelectionPanel;
 import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,15 +16,13 @@ import java.util.stream.Collectors;
  */
 public class HistogramRangeSelectorPanelController extends ASwingRangeViewController
 {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     public HistogramRangeSelectorPanelController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
     {
         super(rangeConfiguration, selectionListener);
     }
 
     @Override
-    protected ARangeSelectionPanel createPanel()
+    protected ASwingRangeSelectionPanel createPanel()
     {
         HistogramSelectionPanel panel = new HistogramSelectionPanel(this);
         final String primaryLabel = rangeConfiguration.getPrimaryLabel();

@@ -14,6 +14,7 @@ import java.util.Optional;
  *
  * @since 0.0.1
  */
+@SuppressWarnings("unused")
 public enum FrequencyUnits implements IRangeType
 {
     HZ("Hz", 1L),
@@ -84,6 +85,7 @@ public enum FrequencyUnits implements IRangeType
         final FrequencyUnits givenUnits = fromString(units);
         return Double.valueOf(convertFrequency(displayValue, givenUnits, HZ)).longValue();
     }
+
 
     public Double convertRawValueToAutoScaledDisplayValue(Long rawValue)
     {
@@ -184,7 +186,7 @@ public enum FrequencyUnits implements IRangeType
     public static long getFrequencyHzFromGuiValueAndUnits(double frequency, String units)
     {
         FrequencyUnits unitsEnum = fromString(units);
-        return new Double(frequency * unitsEnum.getMultiplierToGetHz()).longValue();
+        return Double.valueOf(frequency * unitsEnum.getMultiplierToGetHz()).longValue();
     }
 
     /**

@@ -1,8 +1,8 @@
 package com.mikeoertli.rangeselector.ui.swing.histogram;
 
 import com.mikeoertli.rangeselector.api.IViewStyleProvider;
-import com.mikeoertli.rangeselector.ui.common.IMouseInputHandler;
-import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
+import com.mikeoertli.rangeselector.ui.swing.ASwingRangeSelectionPanel;
+import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionSwingMouseAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +24,6 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
@@ -34,7 +32,7 @@ import java.util.List;
  *
  * @since 0.0.2
  */
-public class HistogramSelectionPanel extends ARangeSelectionPanel
+public class HistogramSelectionPanel extends ASwingRangeSelectionPanel
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int MAX_GAP_BETWEEN_BARS = 5;
@@ -68,16 +66,10 @@ public class HistogramSelectionPanel extends ARangeSelectionPanel
     }
 
     @Override
-    public void addMouseInputHandler(IMouseInputHandler handler) throws IllegalArgumentException
+    public void addMouseInputHandler(RangeSelectionSwingMouseAdapter handler) throws IllegalArgumentException
     {
-        if (handler instanceof MouseListener && handler instanceof MouseMotionListener)
-        {
-            histogramPanel.addMouseListener((MouseListener) handler);
-            histogramPanel.addMouseMotionListener((MouseMotionListener) handler);
-        } else
-        {
-            super.addMouseInputHandler(handler);
-        }
+        histogramPanel.addMouseListener(handler);
+        histogramPanel.addMouseMotionListener(handler);
     }
 
     @Override

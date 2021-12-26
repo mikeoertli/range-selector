@@ -1,4 +1,4 @@
-package com.mikeoertli.rangeselector.ui.swing;
+package com.mikeoertli.rangeselector.ui.javafx;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectionListener;
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
@@ -6,10 +6,12 @@ import com.mikeoertli.rangeselector.api.IViewStyleProvider;
 import com.mikeoertli.rangeselector.core.RangeController;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.listener.PanelSizeChangeListener;
 import com.mikeoertli.rangeselector.ui.common.ViewStyleConfiguration;
-import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionSwingMouseAdapter;
-import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectionPanel;
+import com.mikeoertli.rangeselector.ui.javafx.common.RightClickMenuFxController;
+import com.mikeoertli.rangeselector.ui.javafx.listener.RangeSelectionFxMouseAdapter;
+import com.mikeoertli.rangeselector.ui.javafx.listener.StageSizeChangeListener;
+import com.mikeoertli.rangeselector.ui.swing.ASwingRangeSelectionPanel;
+import javafx.scene.Scene;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +22,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * The controller for a swing based range selection panel defined by {@link SimpleRangeSelectionPanel}
+ * Base range view controller class for JavaFX GUIs
  *
- * @since 0.0.2
+ * @since 0.1.0
  */
-public abstract class ASwingRangeViewController implements ISwingViewController
+public abstract class AJavaFxRangeViewController implements IJavaFxViewController
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    public static final int NO_SELECTION = -1;
 
     /**
      * The {@link UUID} of the panel/controller can be used to uniquely identify them.
@@ -35,14 +38,14 @@ public abstract class ASwingRangeViewController implements ISwingViewController
     private final UUID uuid;
 
     /**
-     * The range selection view is the {@link java.awt.Panel} which this controller manages
+     * The range selection view is the {@link javafx.scene.layout.Pane} which this controller manages
      */
-    protected ASwingRangeSelectionPanel panel;
+    protected AFxRangeSelectionPane pane;
 
     /**
      * The handler of mouse input, responsible for extracting the selected range so that it can be properly rendered
      */
-    protected final RangeSelectionSwingMouseAdapter mouseInputAdapter;
+    protected final RangeSelectionFxMouseAdapter mouseInputAdapter;
 
     /**
      * The controller for the selected range, whether selection is armed, and whether it is locked
@@ -59,12 +62,17 @@ public abstract class ASwingRangeViewController implements ISwingViewController
      * Listens to changes in the size of the view which can then notify this controller that ranges need to be
      * recalculated and the view re-drawn
      */
-    protected final PanelSizeChangeListener sizeChangeListener;
+    protected final StageSizeChangeListener sizeChangeListener;
 
     /**
      * Provider of the view style, i.e. colors to be used when creating the view
      */
     protected final IViewStyleProvider styleProvider;
+
+    /**
+     * Manages right click input for the panes
+     */
+    protected final RightClickMenuFxController rightClickController;
 
     /**
      * The listeners to be notified of any changes to the selection. This is most commonly the user of the API
@@ -73,19 +81,20 @@ public abstract class ASwingRangeViewController implements ISwingViewController
      */
     protected final List<IRangeSelectionListener> selectionListeners = new ArrayList<>();
 
-    protected ASwingRangeViewController()
+    protected AJavaFxRangeViewController()
     {
         this(new RangeConfiguration(), null);
     }
 
-    protected ASwingRangeViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
+    protected AJavaFxRangeViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
     {
         uuid = UUID.randomUUID();
         this.rangeConfiguration = rangeConfiguration;
         rangeController = new RangeController(this);
-        mouseInputAdapter = new RangeSelectionSwingMouseAdapter(rangeController, this);
-        sizeChangeListener = new PanelSizeChangeListener(this);
+        mouseInputAdapter = new RangeSelectionFxMouseAdapter(rangeController, this);
+        sizeChangeListener = new StageSizeChangeListener(this);
         styleProvider = new ViewStyleConfiguration(this);
+        rightClickController = new RightClickMenuFxController(this);
         if (selectionListener != null)
         {
             selectionListeners.add(selectionListener);
@@ -93,36 +102,45 @@ public abstract class ASwingRangeViewController implements ISwingViewController
     }
 
     /**
-     * Required for implementations to create their own panel since there will be specific initialization
-     * necessary in many cases. This also moves the panel construction out of the constructor for a potential
-     * performance improvement.
-     * <p>
-     * It is imperative tha the implementing class performs this, and all Swing rendering functions, on the
-     * AWT Event Dispatch Thread (EDT) as is common practice in Swing.
-     * <p>
-     * Reference: https://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
-     * Reference: http://www.fredosaurus.com/JavaBasics/gui/gui-commentary/guicom-main-thread.html
+     * Create the scene containing the pane
      *
-     * @return the constructed panel ready for display
+     * @param widthPixels  the width of the scene to display in pixels
+     * @param heightPixels the height of the scene to display in pixels
+     * @return a scene containing the content pane
      */
-    protected abstract ASwingRangeSelectionPanel createPanel();
+    public Scene createScene(double widthPixels, double heightPixels)
+    {
+        return new Scene(pane, widthPixels, heightPixels);
+    }
+
+    /**
+     * Create the range selection top level pane. This will be placed inside a scene and displayed.
+     *
+     * @return the top level range selection pane for display
+     * @see #createScene(double, double)
+     */
+    protected abstract AFxRangeSelectionPane createPane();
 
     @Override
     public GuiFrameworkType getSupportedGuiFramework()
     {
-        return GuiFrameworkType.SWING;
+        return GuiFrameworkType.JAVA_FX;
     }
 
     @Override
     public IRangeSelectorView<?> getView()
     {
-        if (panel == null)
+        if (pane == null)
         {
-            panel = createPanel();
-            panel.addMouseInputHandler(mouseInputAdapter);
-            panel.addComponentListener(sizeChangeListener);
+            pane = createPane();
+            pane.addMouseInputHandler(mouseInputAdapter);
+
+            pane.widthProperty().addListener(sizeChangeListener);
+            pane.heightProperty().addListener(sizeChangeListener);
+
+            pane.setOnContextMenuRequested(rightClickController.getContextMenuRequestedListener());
         }
-        return panel;
+        return pane;
     }
 
     @Override
@@ -153,11 +171,12 @@ public abstract class ASwingRangeViewController implements ISwingViewController
     @Override
     public void shutdown()
     {
-        if (panel != null)
+        if (pane != null)
         {
-            panel.reset();
-            panel.removeMouseInputHandler(mouseInputAdapter);
-            panel.removeComponentListener(sizeChangeListener);
+            pane.reset();
+            pane.removeMouseInputHandler(mouseInputAdapter);
+            pane.widthProperty().removeListener(sizeChangeListener);
+            pane.heightProperty().removeListener(sizeChangeListener);
         }
 
         rangeConfiguration.clearSelection();
@@ -169,7 +188,7 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         rangeConfiguration.setSelectionMin(selectionMin);
         rangeConfiguration.setSelectionMax(selectionMax);
         onViewConfigurationChanged();
-        if (selectionMin == -1 && selectionMax == -1)
+        if (selectionMin == NO_SELECTION && selectionMax == NO_SELECTION)
         {
             selectionListeners.forEach(IRangeSelectionListener::onRangeSelectionCleared);
         } else
@@ -200,7 +219,7 @@ public abstract class ASwingRangeViewController implements ISwingViewController
     @Override
     public void onViewSizeChanged()
     {
-        rangeConfiguration.setRangeMax(getPanel().getWidth());
+        rangeConfiguration.setRangeMax((int) getScene().getWidth());
         onViewConfigurationChanged();
     }
 
@@ -213,9 +232,9 @@ public abstract class ASwingRangeViewController implements ISwingViewController
     @Override
     public void onViewConfigurationChanged()
     {
-        if (panel != null)
+        if (pane != null)
         {
-            panel.refreshView();
+            pane.refreshView();
         }
     }
 
@@ -228,10 +247,10 @@ public abstract class ASwingRangeViewController implements ISwingViewController
         rangeController.setLocked(newLockedState);
         if (newLockedState)
         {
-            panel.lockPanel();
+            pane.lockPanel();
         } else
         {
-            panel.unlockPanel();
+            pane.unlockPanel();
         }
     }
 }

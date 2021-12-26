@@ -1,4 +1,7 @@
 # Changelog
+* 0.1.0 - 2021-FIXME
+  * JavaFX support
+  
 * 0.0.3 - 2021-01-03
   * Support for locking the selection range (with or without a selected range)
   * Fixes range selection when click events are outside histogram panel

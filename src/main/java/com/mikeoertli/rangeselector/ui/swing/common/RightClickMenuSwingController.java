@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector.ui.swing.common;
 
-import com.mikeoertli.rangeselector.ui.swing.listener.ILockListener;
+import com.mikeoertli.rangeselector.ui.common.ILockListener;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -14,7 +14,7 @@ import java.awt.event.MouseEvent;
  *
  * @since 0.0.3
  */
-public class RightClickMenuManager
+public class RightClickMenuSwingController
 {
     private static final String LOCKED_TEXT = "Unlock";
     private static final String UNLOCKED_TEXT = "Lock";
@@ -24,7 +24,7 @@ public class RightClickMenuManager
     private final ILockListener lockListener;
     private boolean locked;
 
-    public RightClickMenuManager(ILockListener lockListener)
+    public RightClickMenuSwingController(ILockListener lockListener)
     {
         this.lockListener = lockListener;
         menu = new JPopupMenu();

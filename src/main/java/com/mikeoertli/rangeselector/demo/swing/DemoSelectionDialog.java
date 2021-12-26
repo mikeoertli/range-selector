@@ -1,8 +1,7 @@
-package com.mikeoertli.rangeselector.demo.ui;
+package com.mikeoertli.rangeselector.demo.swing;
 
 import com.mikeoertli.rangeselector.Constants;
 import com.mikeoertli.rangeselector.core.util.ResourceUtilities;
-import com.mikeoertli.rangeselector.demo.ThirdPartyApp;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,11 +28,11 @@ import java.util.Objects;
  */
 public class DemoSelectionDialog extends JDialog
 {
-    private final ThirdPartyApp controller;
+    private final ThirdPartySwingApp controller;
     private final KeyEventDispatcher keyEventDispatcher;
     private final DemoWindowListener windowListener;
 
-    public DemoSelectionDialog(ThirdPartyApp controller)
+    public DemoSelectionDialog(ThirdPartySwingApp controller)
     {
         super();
         windowListener = new DemoWindowListener(this);

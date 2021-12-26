@@ -1,7 +1,7 @@
-package com.mikeoertli.rangeselector.ui.swing.common;
+package com.mikeoertli.rangeselector.ui.common;
 
+import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.api.IViewStyleProvider;
-import com.mikeoertli.rangeselector.ui.swing.ISwingViewController;
 
 import java.awt.Color;
 
@@ -34,11 +34,10 @@ public class ViewStyleConfiguration implements IViewStyleProvider
      */
     private boolean darkMode = DEFAULT_DARK_MODE_ENABLED;
 
-    private final ISwingViewController controller;
-
-    public ViewStyleConfiguration(ISwingViewController controller)
+    private final IRangeViewController viewController;
+    public ViewStyleConfiguration(IRangeViewController viewController)
     {
-        this.controller = controller;
+        this.viewController = viewController;
     }
 
     @Override
@@ -77,7 +76,7 @@ public class ViewStyleConfiguration implements IViewStyleProvider
         if (!this.primarySelectedColor.equals(primarySelectedColor))
         {
             this.primarySelectedColor = primarySelectedColor;
-            notifyViewController();
+            notifyViewStyleListener();
         }
     }
 
@@ -87,7 +86,7 @@ public class ViewStyleConfiguration implements IViewStyleProvider
         if (!this.primaryUnselectedColor.equals(primaryUnselectedColor))
         {
             this.primaryUnselectedColor = primaryUnselectedColor;
-            notifyViewController();
+            notifyViewStyleListener();
         }
     }
 
@@ -97,7 +96,7 @@ public class ViewStyleConfiguration implements IViewStyleProvider
         if (!this.secondarySelectedColor.equals(secondarySelectedColor))
         {
             this.secondarySelectedColor = secondarySelectedColor;
-            notifyViewController();
+            notifyViewStyleListener();
         }
     }
 
@@ -107,7 +106,7 @@ public class ViewStyleConfiguration implements IViewStyleProvider
         if (!this.secondaryUnselectedColor.equals(secondaryUnselectedColor))
         {
             this.secondaryUnselectedColor = secondaryUnselectedColor;
-            notifyViewController();
+            notifyViewStyleListener();
         }
     }
 
@@ -117,7 +116,7 @@ public class ViewStyleConfiguration implements IViewStyleProvider
         if (pixelGapBetweenBars != numPixels)
         {
             pixelGapBetweenBars = numPixels;
-            notifyViewController();
+            notifyViewStyleListener();
         }
     }
 
@@ -127,7 +126,7 @@ public class ViewStyleConfiguration implements IViewStyleProvider
         if (darkMode != enabled)
         {
             darkMode = enabled;
-            notifyViewController();
+            notifyViewStyleListener();
         }
     }
 
@@ -138,8 +137,8 @@ public class ViewStyleConfiguration implements IViewStyleProvider
     }
 
     @Override
-    public void notifyViewController()
+    public void notifyViewStyleListener()
     {
-        controller.onViewConfigurationChanged();
+        viewController.onViewConfigurationChanged();
     }
 }

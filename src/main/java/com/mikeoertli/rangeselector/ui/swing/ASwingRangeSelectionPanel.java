@@ -2,8 +2,8 @@ package com.mikeoertli.rangeselector.ui.swing;
 
 import com.mikeoertli.rangeselector.api.IRangeSelectorView;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.common.IMouseInputHandler;
 import com.mikeoertli.rangeselector.ui.swing.histogram.HistogramSelectionPanel;
+import com.mikeoertli.rangeselector.ui.swing.listener.RangeSelectionSwingMouseAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,8 +11,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -23,7 +21,7 @@ import java.lang.invoke.MethodHandles;
  *
  * @since 0.0.2
  */
-public abstract class ARangeSelectionPanel extends JPanel implements IRangeSelectorView
+public abstract class ASwingRangeSelectionPanel extends JPanel implements IRangeSelectorView<RangeSelectionSwingMouseAdapter>
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     protected static final ImageIcon LOCKED_LIGHT_MODE_ICON = new ImageIcon(HistogramSelectionPanel.class.getResource("/icon/lock/locked-light-mode-32x32.png"));
@@ -37,7 +35,7 @@ public abstract class ARangeSelectionPanel extends JPanel implements IRangeSelec
      *
      * @param controller the controller that owns thia penal
      */
-    protected ARangeSelectionPanel(ISwingViewController controller)
+    protected ASwingRangeSelectionPanel(ISwingViewController controller)
     {
         this.controller = controller;
 
@@ -135,40 +133,23 @@ public abstract class ARangeSelectionPanel extends JPanel implements IRangeSelec
     }
 
     @Override
-    public void addMouseInputHandler(IMouseInputHandler handler) throws IllegalArgumentException
+    public void addMouseInputHandler(RangeSelectionSwingMouseAdapter handler) throws IllegalArgumentException
     {
-        if (handler instanceof MouseListener)
+        if (handler != null)
         {
-            addMouseListener((MouseListener) handler);
-        } else
-        {
-            logger.error("Illegal range selection listener. A Swing panel requires an IMouseInputHandler that is a " +
-                    "MouseListener and the given listener ({}) is not.", handler.getClass().getSimpleName());
-            throw new IllegalArgumentException("Swing GUI for range selection requires IMouseInputHandler is an instanceof MouseListener and MouseMotionListener!");
+            addMouseListener(handler);
+            addMouseMotionListener(handler);
         }
 
-        if (handler instanceof MouseMotionListener)
-        {
-            addMouseMotionListener((MouseMotionListener) handler);
-        } else
-        {
-            logger.error("Illegal range selection listener. A Swing panel requires an IMouseInputHandler that is a " +
-                    "MouseMotionListener and the given listener ({}) is not.", handler.getClass().getSimpleName());
-            throw new IllegalArgumentException("Swing GUI for range selection requires IMouseInputHandler is an instanceof MouseListener and MouseMotionListener!");
-        }
     }
 
     @Override
-    public void removeMouseInputHandler(IMouseInputHandler handler)
+    public void removeMouseInputHandler(RangeSelectionSwingMouseAdapter handler)
     {
-        if (handler instanceof MouseListener)
+        if (handler != null)
         {
-            removeMouseListener((MouseListener) handler);
-        }
-
-        if (handler instanceof MouseMotionListener)
-        {
-            removeMouseMotionListener((MouseMotionListener) handler);
+            removeMouseListener(handler);
+            removeMouseMotionListener(handler);
         }
     }
 

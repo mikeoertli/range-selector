@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
  * @since 0.0.1
  */
 @Component
-public class FrequencyRangeViewControllerProvider implements IRangeViewControllerProvider<HistogramRangeSelectorPanelController>
+public class SwingHistogramViewControllerProvider implements IRangeViewControllerProvider<HistogramRangeSelectorPanelController>
 {
 
     @Override
-    public HistogramRangeSelectorPanelController createSwingViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
+    public HistogramRangeSelectorPanelController createViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
     {
         return new HistogramRangeSelectorPanelController(rangeConfiguration, selectionListener);
     }

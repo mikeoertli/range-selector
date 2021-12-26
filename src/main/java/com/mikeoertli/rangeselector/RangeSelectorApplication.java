@@ -1,6 +1,7 @@
 package com.mikeoertli.rangeselector;
 
-import com.mikeoertli.rangeselector.demo.ThirdPartyApp;
+import com.mikeoertli.rangeselector.demo.javafx.ThirdPartyFxApp;
+import com.mikeoertli.rangeselector.demo.swing.ThirdPartySwingApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
@@ -22,10 +23,13 @@ public class RangeSelectorApplication
     }
 
     @Autowired
-    public RangeSelectorApplication(ThirdPartyApp thirdPartyApp)
+    public RangeSelectorApplication(ThirdPartySwingApp thirdPartySwingApp)
     {
+        thirdPartySwingApp.runDemo();
 
-        thirdPartyApp.runDemo();
+        // This doesn't work
+        ThirdPartyFxApp.launch();
+
 //        JDialog simpleDialog = new JDialog();
 //        simpleDialog.setSize(400, 100);
 //        SimpleRangeSelectorPanelController simpleController = new SimpleRangeSelectorPanelController();
@@ -44,4 +48,10 @@ public class RangeSelectorApplication
 //        histogramDialog.setVisible(true);
 //        histogramDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
+
+//    @Autowired
+//    public RangeSelectorApplication()
+//    {
+//        ThirdPartyFxApp.launch();
+//    }
 }

@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector.ui.swing.simple;
 
-import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
+import com.mikeoertli.rangeselector.ui.swing.ASwingRangeSelectionPanel;
 import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
 
 /**
@@ -8,15 +8,15 @@ import com.mikeoertli.rangeselector.ui.swing.ASwingRangeViewController;
  *
  * @since 0.0.1
  */
-public class SimpleRangeSelectorPanelController extends ASwingRangeViewController
+public class SimpleRangeSelectionPanelController extends ASwingRangeViewController
 {
-    public SimpleRangeSelectorPanelController()
+    public SimpleRangeSelectionPanelController()
     {
         super();
     }
 
     @Override
-    protected ARangeSelectionPanel createPanel()
+    protected ASwingRangeSelectionPanel createPanel()
     {
         return new SimpleRangeSelectionPanel(this);
     }

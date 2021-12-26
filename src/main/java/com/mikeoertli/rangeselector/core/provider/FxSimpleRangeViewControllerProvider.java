@@ -6,7 +6,7 @@ import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.data.rangetype.SimpleCount;
-import com.mikeoertli.rangeselector.ui.swing.simple.SimpleRangeSelectorPanelController;
+import com.mikeoertli.rangeselector.ui.javafx.simple.SimpleFxController;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
  * @since 0.0.2
  */
 @Component
-public class SimpleRangeViewControllerProvider implements IRangeViewControllerProvider<SimpleRangeSelectorPanelController>
+public class FxSimpleRangeViewControllerProvider implements IRangeViewControllerProvider<SimpleFxController>
 {
 
     @Override
-    public SimpleRangeSelectorPanelController createSwingViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
+    public SimpleFxController createViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener)
     {
-        SimpleRangeSelectorPanelController controller = new SimpleRangeSelectorPanelController();
+        SimpleFxController controller = new SimpleFxController();
         if (rangeConfiguration != null)
         {
             controller.restoreState(rangeConfiguration);
@@ -32,12 +32,12 @@ public class SimpleRangeViewControllerProvider implements IRangeViewControllerPr
     @Override
     public boolean isConfigurationSupported(IRangeType rangeType, GuiFrameworkType guiFrameworkType)
     {
-        return rangeType instanceof SimpleCount && guiFrameworkType == GuiFrameworkType.SWING;
+        return rangeType instanceof SimpleCount && guiFrameworkType == GuiFrameworkType.JAVA_FX;
     }
 
     @Override
     public String getDescription()
     {
-        return "Simple Range Selection";
+        return "Simple JavaFX Range Selection";
     }
 }

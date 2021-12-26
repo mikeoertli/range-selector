@@ -85,7 +85,7 @@ public interface IViewStyleProvider
     /**
      * Method that should be triggered any time the view configuration changes (ex: a setter above is called)
      */
-    void notifyViewController();
+    void notifyViewStyleListener();
 
     /**
      * @param enabled when true, this indicates the view should use dark mode

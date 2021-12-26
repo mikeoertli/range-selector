@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector.ui.swing.simple;
 
-import com.mikeoertli.rangeselector.ui.swing.ARangeSelectionPanel;
+import com.mikeoertli.rangeselector.ui.swing.ASwingRangeSelectionPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,13 +16,13 @@ import java.lang.invoke.MethodHandles;
  *
  * @since 0.0.1
  */
-public class SimpleRangeSelectionPanel extends ARangeSelectionPanel
+public class SimpleRangeSelectionPanel extends ASwingRangeSelectionPanel
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final double MIN_WIDTH = 100;
     private static final double MIN_HEIGHT = 50;
 
-    public SimpleRangeSelectionPanel(SimpleRangeSelectorPanelController controller)
+    public SimpleRangeSelectionPanel(SimpleRangeSelectionPanelController controller)
     {
         super(controller);
 

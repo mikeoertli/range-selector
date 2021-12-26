@@ -1,4 +1,4 @@
-package com.mikeoertli.rangeselector.ui.swing.common;
+package com.mikeoertli.rangeselector.ui.swing.listener;
 
 import com.mikeoertli.rangeselector.api.IRangeViewController;
 

@@ -19,7 +19,7 @@ public interface IRangeViewControllerProvider<CONTROL extends IRangeViewControll
      * @param selectionListener  the listener to be notified when a range is selected or removed
      * @return the panel controller for this range type and GUI framework, if supported
      */
-    CONTROL createSwingViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener);
+    CONTROL createViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener);
 
     /**
      * Creates a range selection view controller which owns and manages a panel/view of the given GUI framework type.
