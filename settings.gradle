@@ -1,2 +1,20 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+    }
+
+    // Temporarily removed until this is merged in and 0.0.11 is released
+    // https://github.com/openjfx/javafx-gradle-plugin/pull/113#issuecomment-997647044
+//    plugins {
+//        id 'org.openjfx.javafxplugin'        version '0.0.11-SNAPSHOT'
+//    }
+}
+
+//pluginManagement {
+//    repositories {
+//        mavenLocal()
+//    }
+//}
 rootProject.name = 'range-selector'
 
