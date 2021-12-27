@@ -18,4 +18,10 @@ pluginManagement {
 //}
 rootProject.name = 'range-selector'
 
-include('core', 'javafx', 'swing')
+include ':range-selector-core'
+include ':range-selector-javafx'
+include ':range-selector-swing'
+
+project(':range-selector-core').projectDir = "$rootDir/core" as File
+project(':range-selector-javafx').projectDir = "$rootDir/javafx" as File
+project(':range-selector-swing').projectDir = "$rootDir/swing" as File
