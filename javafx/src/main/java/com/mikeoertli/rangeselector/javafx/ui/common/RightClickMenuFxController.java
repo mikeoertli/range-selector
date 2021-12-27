@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector.javafx.ui.common;
 
-import com.mikeoertli.rangeselector.ui.common.ILockListener;
+import com.mikeoertli.rangeselector.ui.ILockListener;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;

@@ -1,4 +1,4 @@
-package com.mikeoertli.rangeselector.ui.common;
+package com.mikeoertli.rangeselector.ui;
 
 /**
  * Listens to lock state changes

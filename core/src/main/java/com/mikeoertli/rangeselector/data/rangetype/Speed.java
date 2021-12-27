@@ -14,7 +14,7 @@ public class Speed implements IRangeType
     public static final double SPEED_OF_LIGHT_MPS = 299_792_458.0;
 
     @Override
-    public String getLabel()
+    public String getRangeTypeDisplayName()
     {
         return "Speed";
     }

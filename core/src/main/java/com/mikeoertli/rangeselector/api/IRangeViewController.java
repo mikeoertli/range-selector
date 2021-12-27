@@ -2,7 +2,7 @@ package com.mikeoertli.rangeselector.api;
 
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import com.mikeoertli.rangeselector.data.RangeConfiguration;
-import com.mikeoertli.rangeselector.ui.common.ILockListener;
+import com.mikeoertli.rangeselector.ui.ILockListener;
 
 import java.util.Optional;
 import java.util.UUID;

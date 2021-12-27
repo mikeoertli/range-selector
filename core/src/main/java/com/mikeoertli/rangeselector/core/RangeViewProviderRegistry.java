@@ -7,7 +7,6 @@ import com.mikeoertli.rangeselector.api.IRangeViewProviderRegistry;
 import com.mikeoertli.rangeselector.data.GuiFrameworkType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
@@ -27,13 +26,13 @@ public class RangeViewProviderRegistry implements IRangeViewProviderRegistry
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<IRangeViewControllerProvider<? extends IRangeViewController>> registeredControllers;
+    private final List<IRangeViewControllerProvider<? extends IRangeViewController>> registeredControllers = new CopyOnWriteArrayList<>();
 
-    @Autowired
-    public RangeViewProviderRegistry(List<IRangeViewControllerProvider<? extends IRangeViewController>> registeredControllers)
-    {
-        this.registeredControllers = new CopyOnWriteArrayList<>(registeredControllers);
-    }
+//    @Autowired
+//    public RangeViewProviderRegistry()
+//    {
+//
+//    }
 
     @Override
     public Optional<IRangeViewControllerProvider<? extends IRangeViewController>> getRangeViewControlProvider(IRangeType rangeType, GuiFrameworkType guiFrameworkType)

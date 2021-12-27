@@ -1,4 +1,4 @@
-package com.mikeoertli.rangeselector.ui.common;
+package com.mikeoertli.rangeselector.ui;
 
 import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.api.IViewStyleProvider;

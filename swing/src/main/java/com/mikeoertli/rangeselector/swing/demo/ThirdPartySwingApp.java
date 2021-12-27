@@ -27,10 +27,10 @@ import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static com.mikeoertli.rangeselector.data.DataUtilities.buildRandomDataSet;
 
 /**
  * Application to test drive the range selection API
@@ -82,18 +82,6 @@ public class ThirdPartySwingApp
             RangeConfiguration config = new RangeConfiguration();
             simpleController = (SimpleRangeSelectionPanelController) provider.createViewController(config, null);
         });
-    }
-
-    private List<Integer> buildRandomDataSet(int numDataPoints, int maxValue)
-    {
-        List<Integer> dataSet = new ArrayList<>();
-
-        for (int i = 0; i < numDataPoints; i++)
-        {
-            dataSet.add(ThreadLocalRandom.current().nextInt(0, maxValue));
-        }
-
-        return dataSet;
     }
 
     public void runDemo()

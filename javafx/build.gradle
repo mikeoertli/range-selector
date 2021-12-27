@@ -1,11 +1,12 @@
 plugins {
+    id 'org.springframework.boot' version '2.5.6'
     id 'org.openjfx.javafxplugin' version '0.0.11-SNAPSHOT'
 }
 
 javafx {
     version = "17.0.1"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
-    mainClassName = 'com.mikeoertli.rangeselector.demo.javafx.ThirdPartyFxApp'
+    mainClassName = 'com.mikeoertli.rangeselector.javafx.FxRangeSelectorApplication'
 }
 
 dependencies {

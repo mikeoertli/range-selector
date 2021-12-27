@@ -12,7 +12,7 @@ public interface IRangeType
     /**
      * @return the display name of this type of range, ex: "Speed" or "Frequency"
      */
-    String getLabel();
+    String getRangeTypeDisplayName();
 
     /**
      * @return The units of measure (for display purposes) if any for this range type. (ex: "MPH" or "MHz"

@@ -1,6 +1,6 @@
 package com.mikeoertli.rangeselector.swing.ui.common;
 
-import com.mikeoertli.rangeselector.ui.common.ILockListener;
+import com.mikeoertli.rangeselector.ui.ILockListener;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;

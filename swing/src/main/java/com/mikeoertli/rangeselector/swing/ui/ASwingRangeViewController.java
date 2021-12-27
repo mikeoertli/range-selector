@@ -9,7 +9,7 @@ import com.mikeoertli.rangeselector.data.RangeConfiguration;
 import com.mikeoertli.rangeselector.swing.ui.listener.PanelSizeChangeListener;
 import com.mikeoertli.rangeselector.swing.ui.listener.RangeSelectionSwingMouseAdapter;
 import com.mikeoertli.rangeselector.swing.ui.simple.SimpleRangeSelectionPanel;
-import com.mikeoertli.rangeselector.ui.common.ViewStyleConfiguration;
+import com.mikeoertli.rangeselector.ui.ViewStyleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

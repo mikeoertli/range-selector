@@ -45,7 +45,7 @@ public class SimpleCount implements IRangeType
     }
 
     @Override
-    public String getLabel()
+    public String getRangeTypeDisplayName()
     {
         return label;
     }

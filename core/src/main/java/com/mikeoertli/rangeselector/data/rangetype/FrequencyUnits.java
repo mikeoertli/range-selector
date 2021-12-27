@@ -57,7 +57,7 @@ public enum FrequencyUnits implements IRangeType
     }
 
     @Override
-    public String getLabel()
+    public String getRangeTypeDisplayName()
     {
         return "Frequency";
     }
