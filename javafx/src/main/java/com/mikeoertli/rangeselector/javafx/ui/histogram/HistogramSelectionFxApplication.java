@@ -25,7 +25,7 @@ public class HistogramSelectionFxApplication// extends Application
         HistogramSelectionFxPaneController controller = new HistogramSelectionFxPaneController();
         loader.setController(controller);
 
-        File fxmlFile = new File("com/mikeoertli/rangeselector/javafx/ui/histogram/HistogramSelectionFxPane.fxml");
+        File fxmlFile = new File("fxml/HistogramSelectionFxPane.fxml");
         URL fxmlUrl = fxmlFile.toURI().toURL();
         loader.setLocation(fxmlUrl);
 

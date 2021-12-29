@@ -21,6 +21,19 @@ public interface IRangeViewControllerProvider<CONTROL extends IRangeViewControll
     CONTROL createViewController(RangeConfiguration rangeConfiguration, IRangeSelectionListener selectionListener);
 
     /**
+     * Creates a range selection view controller which owns and manages a panel/view of the given GUI framework type
+     * without a range selection listener.
+     *
+     * @param rangeConfiguration the state/configuration of the range view
+     * @return the panel controller for this range type and GUI framework, if supported
+     * @since 0.1.0
+     */
+    default CONTROL createViewController(RangeConfiguration rangeConfiguration)
+    {
+        return createViewController(rangeConfiguration, null);
+    }
+
+    /**
      * Query to indicate whether a particular type of ranges and type of GUI framework is supported by
      * this controller.
      *

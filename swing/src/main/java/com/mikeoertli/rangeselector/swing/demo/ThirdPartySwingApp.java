@@ -63,7 +63,7 @@ public class ThirdPartySwingApp
                         "Frequency (MHz)", "Frequency", primaryData, secondaryData,
                         "# Targets", "# Detections");
 
-                controller = ((SwingHistogramViewControllerProvider) provider).createViewController(rangeConfiguration, null);
+                controller = ((SwingHistogramViewControllerProvider) provider).createViewController(rangeConfiguration);
 
                 List<Integer> smallPrimary = buildRandomDataSet(5, 20);
                 List<Integer> smallSecondary = buildRandomDataSet(5, 5);
@@ -71,7 +71,7 @@ public class ThirdPartySwingApp
                         "Frequency (MHz)", "Frequency", smallPrimary, smallSecondary,
                         "# Targets", "# Detections");
 
-                smallSimController = ((SwingHistogramViewControllerProvider) provider).createViewController(smallRangeConfig, null);
+                smallSimController = ((SwingHistogramViewControllerProvider) provider).createViewController(smallRangeConfig);
             }
         });
 
@@ -80,7 +80,7 @@ public class ThirdPartySwingApp
 
         simpleProvider.ifPresent(provider -> {
             RangeConfiguration config = new RangeConfiguration();
-            simpleController = (SimpleRangeSelectionPanelController) provider.createViewController(config, null);
+            simpleController = (SimpleRangeSelectionPanelController) provider.createViewController(config);
         });
     }
 

@@ -10,6 +10,6 @@ javafx {
 }
 
 dependencies {
-    implementation project(":range-selector-core")
+    api project(":range-selector-core")
 }
 

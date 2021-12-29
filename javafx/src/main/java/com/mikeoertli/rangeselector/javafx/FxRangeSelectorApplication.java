@@ -1,6 +1,5 @@
 package com.mikeoertli.rangeselector.javafx;
 
-import com.mikeoertli.rangeselector.Constants;
 import com.mikeoertli.rangeselector.api.IRangeViewController;
 import com.mikeoertli.rangeselector.api.IRangeViewControllerProvider;
 import com.mikeoertli.rangeselector.api.IRangeViewProviderRegistry;
@@ -10,26 +9,25 @@ import com.mikeoertli.rangeselector.data.rangetype.FrequencyUnits;
 import com.mikeoertli.rangeselector.data.rangetype.SimpleCount;
 import com.mikeoertli.rangeselector.javafx.provider.FxHistogramViewControllerProvider;
 import com.mikeoertli.rangeselector.javafx.ui.AJavaFxRangeViewController;
+import com.mikeoertli.rangeselector.javafx.ui.FxmlView;
+import com.mikeoertli.rangeselector.javafx.ui.StageManager;
 import com.mikeoertli.rangeselector.javafx.ui.histogram.HistogramSelectionFxPaneController;
 import com.mikeoertli.rangeselector.javafx.ui.simple.SimpleFxController;
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
-import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static com.mikeoertli.rangeselector.data.DataUtilities.buildRandomDataSet;
 
@@ -42,33 +40,50 @@ public class FxRangeSelectorApplication extends Application
     private HistogramSelectionFxPaneController histogramController;
     private HistogramSelectionFxPaneController smallHistogramController;
     private SimpleFxController simpleFxController;
-    private final IRangeViewProviderRegistry registry;
+    private StageManager stageManager;
+    private static ApplicationContext context;
 
     public static void main(String[] args)
     {
-        final ApplicationContext context = new SpringApplicationBuilder(FxRangeSelectorApplication.class)
-                .web(WebApplicationType.NONE)
-                .headless(false)
-                .bannerMode(Banner.Mode.OFF)
-                .run(args);
-        Application.launch(args);
+        CompletableFuture.supplyAsync(() -> context = SpringApplication.run(FxRangeSelectorApplication.class, args))
+                .whenComplete((ctx, throwable) -> {
+                    if (throwable != null)
+                    {
+                        logger.error("Failed to load spring application context: ", throwable);
+                    } else
+                    {
+                        logger.debug("Spring context successfully initialized, launching JavaFX app: {}", ctx.getApplicationName());
+                        Application.launch(args);
+                    }
+                }).thenAccept(applicationContext -> logger.debug("JavaFX application launch complete: {}", applicationContext.getApplicationName()));
     }
 
-    @Autowired
-    public FxRangeSelectorApplication(IRangeViewProviderRegistry registry)
+    public FxRangeSelectorApplication()
     {
-        this.registry = registry;
-//        this.registry = context.getBean(IRangeViewProviderRegistry.class);
+        logger.debug("Creating FxRangeSelectorApplication...");
     }
 
-    public void initializeApplication()
+    @Override
+    public void start(Stage primaryStage) throws Exception
     {
+        stageManager = Objects.requireNonNull(context.getBean(StageManager.class, primaryStage), "Unable to find the StageManager");
+        stageManager.switchScene(FxmlView.MAIN_MENU);
+    }
+
+    @Override
+    public void init() throws Exception
+    {
+        IRangeViewProviderRegistry registry = context.getBean(IRangeViewProviderRegistry.class);
+
+        logger.trace("init -- registry initialized");
+
         final Optional<IRangeViewControllerProvider<? extends IRangeViewController>> histogramViewControllerProvider =
                 registry.getRangeViewControlProvider(FrequencyUnits.MHZ, GuiFrameworkType.JAVA_FX);
 
         final int numBars = 150;
 
         histogramViewControllerProvider.ifPresent(provider -> {
+            logger.trace("init -- initializing the histogram view controller provider...");
             if (provider instanceof FxHistogramViewControllerProvider)
             {
                 List<Integer> primaryData = buildRandomDataSet(numBars, 20);
@@ -77,7 +92,7 @@ public class FxRangeSelectorApplication extends Application
                         "Frequency (MHz)", "Frequency", primaryData, secondaryData,
                         "# Targets", "# Detections");
 
-                histogramController = ((FxHistogramViewControllerProvider) provider).createViewController(rangeConfiguration, null);
+                histogramController = ((FxHistogramViewControllerProvider) provider).createViewController(rangeConfiguration);
 
                 List<Integer> smallPrimary = buildRandomDataSet(5, 20);
                 List<Integer> smallSecondary = buildRandomDataSet(5, 5);
@@ -85,7 +100,7 @@ public class FxRangeSelectorApplication extends Application
                         "Frequency (MHz)", "Frequency", smallPrimary, smallSecondary,
                         "# Targets", "# Detections");
 
-                smallHistogramController = ((FxHistogramViewControllerProvider) provider).createViewController(smallRangeConfig, null);
+                smallHistogramController = ((FxHistogramViewControllerProvider) provider).createViewController(smallRangeConfig);
             }
         });
 
@@ -93,35 +108,10 @@ public class FxRangeSelectorApplication extends Application
                 registry.getRangeViewControlProvider(SimpleCount.BASIC, GuiFrameworkType.SWING);
 
         simpleProvider.ifPresent(provider -> {
+            logger.trace("init -- initializing the simple view controller provider...");
             RangeConfiguration config = new RangeConfiguration();
-            simpleFxController = (SimpleFxController) provider.createViewController(config, null);
+            simpleFxController = (SimpleFxController) provider.createViewController(config);
         });
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception
-    {
-        primaryStage.setTitle(Constants.DEMO_APP_NAME);
-
-        final Button simpleButton = new Button("Simple");
-        final Button histogramButton = new Button("Histogram");
-        final Button largeHistogramButton = new Button("Large");
-
-        simpleButton.setOnMouseClicked(event -> showSimpleDemo(primaryStage));
-        histogramButton.setOnMouseClicked(event -> showSmallHistogramDemo(primaryStage));
-        largeHistogramButton.setOnMouseClicked(event -> showLargeHistogramDemo(primaryStage));
-
-        final Group buttonGroup = new Group(simpleButton, histogramButton, largeHistogramButton);
-
-        final Scene mainScene = new Scene(buttonGroup, 600, 400);
-        primaryStage.setScene(mainScene);
-        primaryStage.show();
-    }
-
-    @Override
-    public void init() throws Exception
-    {
-        initializeApplication();
     }
 
     public void showSimpleDemo(Stage primaryStage)
