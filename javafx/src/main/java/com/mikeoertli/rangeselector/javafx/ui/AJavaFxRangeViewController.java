@@ -52,7 +52,7 @@ public abstract class AJavaFxRangeViewController implements IJavaFxViewControlle
     protected final RangeController rangeController;
 
     /**
-     * The range configuration that currently represents the state of the {@link ASwingRangeSelectionPanel}.
+     * The range configuration that currently represents the state of the {@link AFxRangeSelectionPane}.
      * This can be provided when constructed or restored via {@link #restoreState(RangeConfiguration)}
      */
     protected RangeConfiguration rangeConfiguration;

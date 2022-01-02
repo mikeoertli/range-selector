@@ -4,7 +4,7 @@ plugins {
 }
 
 javafx {
-    version = "17.0.1"
+    version = "17.0.2-ea+2"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
     mainClassName = 'com.mikeoertli.rangeselector.javafx.FxRangeSelectorApplication'
 }
